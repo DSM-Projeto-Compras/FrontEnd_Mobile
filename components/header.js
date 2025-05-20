@@ -1,33 +1,39 @@
-import React from "react";
-import { View, Image, StyleSheet } from "react-native";
+import React from 'react';
+import { View, StyleSheet, Image } from 'react-native';
+import { Appbar } from 'react-native-paper';
 
-const Header = ({ leftImage, rightImage }) => {
-    return (
-        <View style={styles.container}>
-            <Image source={leftImage} style={styles.image} resizeMethod="constain" />
-            <Image source={rightImage} style={styles.image} resizeMethod="constain" />
-        </View>
-    )
-}
+const Header = () => {
+  return (
+    <Appbar.Header style={styles.header}>
+      {/* Imagem à esquerda */}
+      <Image
+        source={require('../assets/icon.png')}
+        style={styles.image}
+        resizeMode="contain"
+      />
+
+      {/* Espaço central vazio para empurrar as imagens para as extremidades */}
+      <View style={{ flex: 1 }} />
+
+      {/* Imagem à direita */}
+      <Image
+        source={require('../assets/favicon.png')} 
+        style={styles.image}
+        resizeMode="contain"
+      />
+    </Appbar.Header>
+  );
+};
 
 const styles = StyleSheet.create({
-  container: {
-      width: '100%',
-      height: 60,
-      paddingHorizontal: 16,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      backgroundColor: '#fff', // ou qualquer cor de fundo desejada
-      elevation: 4, // para Android
-      shadowColor: '#000', // para iOS
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-},
+  header: {
+    backgroundColor: '#fff',
+    elevation: 4,
+  },
   image: {
-    width: 40,
-    height: 40,
+    width: 32,
+    height: 32,
+    marginHorizontal: 8,
   },
 });
 

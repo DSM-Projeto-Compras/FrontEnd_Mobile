@@ -1,21 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Provider as PaperProvider } from 'react-native-paper';
 import Header from './components/header';
 
 export default function App() {
   return (
-    <Header 
-      leftImage={require('./assets/icon.png')}
-      rightImage={require('./assets/favicon.png')}
-    />
+    <PaperProvider>
+      <SafeAreaView style={{ flex:1 }}>
+        <Header />
+      </SafeAreaView>
+    </PaperProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
