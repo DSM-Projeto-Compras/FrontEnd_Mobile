@@ -1,11 +1,11 @@
 import React from "react";
-import { KeyboardAvoidingView, View, StyleSheet, Platform, TouchableOpacity } from "react-native";
+import { KeyboardAvoidingView, View, StyleSheet, Platform } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import Header from "./header";
+import Header from "../components/header";
 
-const LoginScreen =()=>{
-  const navigation = useNavigation();
+const RegisterScreen =()=>{
+    const navigation = useNavigation();
     return(
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -14,9 +14,15 @@ const LoginScreen =()=>{
             <Header />
             <View style={styles.content}>
                 <Text variant="headlineMedium" style={styles.title}>
-                    Bem Vindo(a)!
-                    Inicie sua sessão
+                    Crie sua conta
                 </Text>
+
+                <TextInput
+                    label="Nome"
+                    style={styles.input}
+                    keyboardType="name" 
+                    autoCapitalize="none"
+                />
 
                 <TextInput
                     label="Email"
@@ -31,20 +37,20 @@ const LoginScreen =()=>{
                     style={styles.input}
                 />
 
-                <View style={styles.registerContainer}>
-                <Text>Não possui conta? </Text>
-                <TouchableOpacity onPress={navigation.navigate('cadastro')}>
-                  <Text style={styles.registerLink}>Cadastre-se</Text>
-                </TouchableOpacity>
-                </View>
+                <TextInput 
+                    label="Confirme sua senha"
+                    secureTextEntry
+                    style={styles.input}
+                />
 
                 <Button 
                     mode="contained"
                     style={styles.button}
                     buttonColor='#AE0F0A'
                     textColor="white"
+                    onPress={() => navigation.navigate("Login")}
                 >
-                    Login
+                    Criar Conta
                 </Button>
             </View>
         </KeyboardAvoidingView>
@@ -68,14 +74,12 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 16,
   },
-  registerLink: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
   button: {
     marginTop: 8,
     paddingVertical: 6,
-  },
+    fontWeight: 'bold',
+    color: 'red'
+  }
 });
 
-export default LoginScreen;
+export default RegisterScreen;
