@@ -1,8 +1,9 @@
 import React from "react";
 import { KeyboardAvoidingView, View, StyleSheet, Platform, TouchableOpacity } from "react-native";
-import { TextInput, Button, Text } from "react-native-paper";
+import { TextInput, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
+import BtnPadrao from "../components/button";
 
 const LoginScreen =()=>{
   const navigation = useNavigation();
@@ -30,14 +31,14 @@ const LoginScreen =()=>{
                     style={styles.input}
                 />
 
-                <Button 
-                    mode="contained"
-                    style={styles.button}
-                    buttonColor='#AE0F0A'
-                    textColor="white"
-                >
-                    Login
-                </Button>
+                <BtnPadrao 
+                title="Login"
+                onPress={() => {
+                  console.log("funcionando")
+                }}
+                btnColor="#AE0F0A"
+                textColor="white"
+                />
 
                 <View style={styles.registerContainer}>
                   <Text>Não possui conta? </Text>
