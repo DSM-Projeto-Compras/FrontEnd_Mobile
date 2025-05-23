@@ -4,6 +4,7 @@ import { TextInput, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
 import BtnPadrao from "../components/button";
+import OrderCard from "../components/card";
 
 const LoginScreen =()=>{
   const navigation = useNavigation();
@@ -46,6 +47,15 @@ const LoginScreen =()=>{
                     <Text style={styles.registerLink}>Cadastre-se</Text>
                   </TouchableOpacity>
                 </View>
+
+
+                {/* itemName, quantity, orderDate, status = "Pendente" */}
+                <OrderCard 
+                itemName={"Impressora 3D"}
+                quantity={2}
+                orderDate={"22/05/2025"}
+                />
+
             </View>
         </KeyboardAvoidingView>
     );
