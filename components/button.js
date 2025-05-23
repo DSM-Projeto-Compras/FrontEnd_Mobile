@@ -1,25 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Button } from 'react-native-paper';
 
 const Button = ({ title, onPress, color = '#6200ee' }) => {
   return (
-    <TouchableOpacity style={[styles.button, { backgroundColor: color }]} onPress={onPress}>
-      <Text style={styles.text}>{title}</Text>
-    </TouchableOpacity>
+    <Button mode="contained" onPress={onPress} buttonColor={color}>
+      {title}
+    </Button>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-  },
-  text: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-});
 
 export default Button;
