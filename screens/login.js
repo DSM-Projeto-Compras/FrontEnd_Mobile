@@ -2,7 +2,7 @@ import React from "react";
 import { KeyboardAvoidingView, View, StyleSheet, Platform, TouchableOpacity } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import Header from "../components/header";
+import Header from "./header";
 
 const LoginScreen =()=>{
   const navigation = useNavigation();
