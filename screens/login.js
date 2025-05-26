@@ -2,6 +2,7 @@ import React from "react";
 import { KeyboardAvoidingView, View, StyleSheet, Platform, TouchableOpacity } from "react-native";
 import { TextInput, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import Header from "./header";
 import Header from "../components/header";
 import BtnPadrao from "../components/button";
 import OrderCard from "../components/card";
