@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, View, StyleSheet, Platform, TouchableOpacity } fr
 import { TextInput, Button, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
+import BottomNav from "../components/bottomNavigation";
 
 const LoginScreen =()=>{
   const navigation = useNavigation();
@@ -46,6 +47,7 @@ const LoginScreen =()=>{
                   </TouchableOpacity>
                 </View>
             </View>
+            <BottomNav />
         </KeyboardAvoidingView>
     );
 };
