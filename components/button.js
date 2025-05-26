@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button } from 'react-native-paper';
 
-const Button = ({ title, onPress, color = '#6200ee' }) => {
+const BtnPadrao = ({ title, onPress, btnColor = '#6200ee' }) => {
   return (
-    <Button mode="contained" onPress={onPress} buttonColor={color}>
+    <Button mode="contained" onPress={onPress} buttonColor={btnColor}>
       {title}
     </Button>
   );
 };
 
-export default Button;
+export default BtnPadrao;
