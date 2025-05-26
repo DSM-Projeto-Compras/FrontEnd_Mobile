@@ -1,4 +1,4 @@
-import react from "react";
+import react, {useState} from "react";
 import { TextInput, Button, Text, List } from "react-native-paper";
 import { StyleSheet, ScrollView, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -34,8 +34,8 @@ const OrderScreen =()=>{
                     <List.Accordion title={ selectedValue == null ? 'Categoria' : selectedValue }
                         expanded={expanded}
                         onPress={handleAccordionPress}>
-                        <List.Item title="Caneta" />
-                        <List.Item title="Borracha" />
+                        <List.Item title="Caneta" onPress={()=>{handleItemPress("Caneta")}} />
+                        <List.Item title="Borracha" onPress={()=>{handleItemPress("Borracha")}} />
                     </List.Accordion>
                 </List.Section>
 
