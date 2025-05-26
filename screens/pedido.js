@@ -3,6 +3,7 @@ import { TextInput, Button, Text, List } from "react-native-paper";
 import { StyleSheet, ScrollView, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
+import BottomNav from "../components/bottomNavigation";
 
 const OrderScreen =()=>{
     const navigation = useNavigation();
@@ -59,7 +60,7 @@ const OrderScreen =()=>{
                 >
                     Enviar
                 </Button>
-
+              <BottomNav />
             </View>
         </ScrollView>
     );
