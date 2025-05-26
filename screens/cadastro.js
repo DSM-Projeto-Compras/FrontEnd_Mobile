@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, View, StyleSheet, Platform } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
+import BtnPadrao from "../components/button";
 
 const RegisterScreen =()=>{
     const navigation = useNavigation();
@@ -43,15 +44,14 @@ const RegisterScreen =()=>{
                     style={styles.input}
                 />
 
-                <Button 
-                    mode="contained"
-                    style={styles.button}
-                    buttonColor='#AE0F0A'
-                    textColor="white"
-                    onPress={() => navigation.navigate("Login")}
-                >
-                    Criar Conta
-                </Button>
+                <BtnPadrao 
+                title="Criar Conta"
+                onPress={() => {
+                  navigation.navigate("Login")
+                }}
+                btnColor="#AE0F0A"
+                textColor="white"
+                />
             </View>
         </KeyboardAvoidingView>
     );
