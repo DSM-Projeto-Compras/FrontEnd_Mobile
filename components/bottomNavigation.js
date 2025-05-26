@@ -1,11 +1,28 @@
 import * as React from 'react';
 import { BottomNavigation, Text } from 'react-native-paper';
+import { useNavigation } from "@react-navigation/native";
 
-const RequestRoute = () => <Text>Requisições</Text>;
+const RequestRoute = () =>{
+  const navigation = useNavigation();
+
+  React.useEffect(() => {
+    navigation.navigate('Order');
+  }, [navigation]);
+
+  return null;
+};
 
 const HistoryRoute = () => <Text>Histórico</Text>;
 
-const LogoutRoute = () => <Text>Sair</Text>;
+const LogoutRoute = () => {
+  const navigation = useNavigation();
+
+  React.useEffect(() => {
+    navigation.navigate('Login');
+  }, [navigation]);
+
+  return null;
+};   
 
 const BottomNav = () => {
   const [index, setIndex] = React.useState(0);

@@ -4,6 +4,7 @@ import { StyleSheet, ScrollView, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
 import BottomNav from "../components/bottomNavigation";
+import BtnPadrao from "../components/button";
 
 const OrderScreen =()=>{
     const navigation = useNavigation();
@@ -52,14 +53,15 @@ const OrderScreen =()=>{
                     autoCapitalize="none"
                 />
 
-                <Button 
-                    mode="contained"
-                    style={styles.button}
-                    buttonColor='#AE0F0A'
-                    textColor="white"
-                >
-                    Enviar
-                </Button>
+                <BtnPadrao 
+                title="Register"
+                // onPress={() => {
+                //   navigation.navigate('Order')
+                // }}
+                btnColor="#AE0F0A"
+                textColor="white"
+                />
+                
               <BottomNav />
             </View>
         </ScrollView>
