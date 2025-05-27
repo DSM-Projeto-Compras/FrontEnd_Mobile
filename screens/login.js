@@ -22,19 +22,36 @@ const LoginScreen = () => {
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    if (!email || !senha) {
-      setError("Por favor, preencha todos os campos");
+    setError("");
+
+    if (!email) {
+      setError("O email é obrigatório");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("O email informado não é válido");
+      return;
+    }
+
+    if (!senha) {
+      setError("A senha é obrigatória");
+      return;
+    }
+
+    if (senha.length < 6) {
+      setError("A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
     setIsLoading(true);
-    setError("");
 
     try {
       await login(email, senha);
     } catch (err) {
-      setError("Falha no login. Verifique suas credenciais.");
-      console.error(err);
+      setError("Credenciais inválidas. Verifique seu email e senha.");
+      console.error("Erro no login:", err);
     } finally {
       setIsLoading(false);
     }
