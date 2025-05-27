@@ -4,12 +4,13 @@ import RegisterScreen from './screens/cadastro';
 import OrderScreen from './screens/pedido';
 import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider } from 'react-native-paper';
+import  customTheme  from './tema'
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    // <PaperProvider>
+    <PaperProvider theme={customTheme}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen 
@@ -29,7 +30,7 @@ export default function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    // </PaperProvider>
+    </PaperProvider>
   );
 }
 

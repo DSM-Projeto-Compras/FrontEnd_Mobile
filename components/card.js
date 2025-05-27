@@ -8,15 +8,16 @@ const OrderCard = ({
   quantity,
   orderDate,
   status = "Pendente",
-  nomeSolicitante,
+  nomeSolicitante = "Marcelo",
   isAdmin = true,
   onStatusChange = () => {},
   id,
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(status);
 
-  const getStatusColor = () => {
-    switch (status) {
+  const getStatusColor = (statusValue = currentStatus) => {
+    switch (statusValue) {
       case "Pendente":
         return "#FFEB3B";
       case "Negado":
@@ -32,6 +33,7 @@ const OrderCard = ({
   const closeMenu = () => setMenuVisible(false);
 
   const handleStatusSelect = (newStatus) => {
+    setCurrentStatus(newStatus);
     closeMenu();
     onStatusChange(id, newStatus);
   };
@@ -51,7 +53,7 @@ const OrderCard = ({
                     onPress={openMenu}
                     style={[styles.statusText, { color: "#155DFC" }]}
                   >
-                    {status}
+                    {currentStatus}
                   </Text>
                 }
               >
@@ -105,7 +107,7 @@ const OrderCard = ({
           )}
         </Card.Actions>
       </Card>
-      <View style={[styles.statusStrip, { backgroundColor: getStatusColor() }]} />
+      <View style={[styles.statusStrip, { backgroundColor: getStatusColor(currentStatus) }]} />
     </View>
   );
 };
@@ -126,6 +128,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2EEF8",
     borderLeftWidth: 0,
     paddingBottom: 10,
+    borderRadius: 0,
   },
   header: {
     flexDirection: "row",
