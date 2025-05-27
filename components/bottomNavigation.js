@@ -13,19 +13,19 @@ const BottomNav = () => {
     { key: 'logout', title: 'Sair', focusedIcon: 'logout' },
   ];
 
-  const renderContent = () => {
-    const currentKey = routes[index].key;
+  // const renderContent = () => {
+  //   const currentKey = routes[index].key;
 
-    if (currentKey === 'history') {
-      return (
-        <View style={styles.content}>
-          <Text>Histórico</Text>
-        </View>
-      );
-    }
+  //   if (currentKey === 'history') {
+  //     return (
+  //       <View style={styles.content}>
+  //         <Text>Histórico</Text>
+  //       </View>
+  //     );
+  //   }
 
-    return <View style={styles.content} />; // Nada será renderizado se for request ou logout
-  };
+  //   return <View style={styles.content} />; // Nada será renderizado se for request ou logout
+  // };
 
   return (
     <View style={styles.container}>
@@ -40,6 +40,9 @@ const BottomNav = () => {
           } else if (route.key === 'logout') {
             preventDefault();
             navigation.navigate('Login');
+          } else if (route.key === 'history') {
+            preventDefault();
+            navigation.navigate('Hist');
           } else {
             const newIndex = routes.findIndex(r => r.key === route.key);
             setIndex(newIndex);

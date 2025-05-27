@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/login";
 import RegisterScreen from "./screens/cadastro";
 import OrderScreen from "./screens/pedido";
+import HistScreen from "./screens/historico";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -25,6 +26,11 @@ export default function App() {
           <Stack.Screen
             name="Order"
             component={OrderScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Hist"
+            component={HistScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
