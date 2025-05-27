@@ -1,11 +1,13 @@
 import * as React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { BottomNavigation } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../contexts/AuthContext";
 
 const BottomNav = () => {
   const [index, setIndex] = React.useState(0);
   const navigation = useNavigation();
+  const { logout } = useAuth();
 
   const routes = [
     {
@@ -18,6 +20,18 @@ const BottomNav = () => {
     { key: "logout", title: "Sair", focusedIcon: "logout" },
   ];
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <BottomNavigation.Bar
@@ -29,7 +43,7 @@ const BottomNav = () => {
             navigation.navigate("Order");
           } else if (route.key === "logout") {
             preventDefault();
-            navigation.navigate("Login");
+            handleLogout();
           } else if (route.key === "history") {
             preventDefault();
             navigation.navigate("Hist");
