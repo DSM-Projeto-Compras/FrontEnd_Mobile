@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, senha) => {
     try {
-
       const response = await fetch(`${API_BASEURL}/logins`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -19,14 +18,34 @@ export const AuthProvider = ({ children }) => {
 
       const data = await response.json();
 
-      if (data.token) {
-        await SecureStore.setItemAsync("userToken", data.token);
-        setUserToken(data.token);
+      if (data.access_token) {
+        await SecureStore.setItemAsync("userToken", data.access_token);
+        setUserToken(data.access_token);
       } else {
         throw new Error("Token não encontrado na resposta");
       }
     } catch (error) {
       console.error("Erro no login:", error);
+      throw error;
+    }
+  };
+
+  const register = async (nome, email, senha) => {
+    try {
+      const response = await fetch(`${API_BASEURL}/logins/cadastro`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, email, senha }),
+      });
+
+      if (response.status === 201) {
+        return { success: true };
+      }
+
+      const data = await response.json();
+      throw new Error(data.message || "Erro no cadastro");
+    } catch (error) {
+      console.error("Erro no cadastro:", error);
       throw error;
     }
   };
@@ -47,7 +66,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userToken, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{ userToken, login, register, logout, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );
