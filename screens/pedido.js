@@ -18,65 +18,67 @@ const OrderScreen =()=>{
     setExpanded(false);
   }
     return(
-        <ScrollView>
-            <Header />
+    <View style={styles.pageContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Header />
 
-            <Text variant="headlineMedium" style={styles.title}>
-                    Faça a requisição do produto desejado
-            </Text>
+        <Text variant="headlineMedium" style={styles.title}>
+          Faça a requisição do produto desejado
+        </Text>
 
-            <View style={styles.container}>
-                <TextInput 
-                    label="Nome do Produto"
-                    style={styles.input}
-                    autoCapitalize="none"
-                />
+        <View style={styles.formContainer}>
+          <TextInput
+            label="Nome do Produto"
+            style={styles.input}
+            autoCapitalize="none"
+          />
 
-                <List.Section>
-                    <List.Accordion title={ selectedValue == null ? 'Categoria' : selectedValue }
-                        expanded={expanded}
-                        onPress={handleAccordionPress}>
-                        <List.Item title="Caneta" onPress={()=>{handleItemPress("Caneta")}} />
-                        <List.Item title="Borracha" onPress={()=>{handleItemPress("Borracha")}} />
-                    </List.Accordion>
-                </List.Section>
+          <List.Section>
+            <List.Accordion
+              title={selectedValue == null ? "Categoria" : selectedValue}
+              expanded={expanded}
+              onPress={handleAccordionPress}
+            >
+              <List.Item title="Caneta" onPress={() => handleItemPress("Caneta")} />
+              <List.Item title="Borracha" onPress={() => handleItemPress("Borracha")} />
+            </List.Accordion>
+          </List.Section>
 
-                <TextInput 
-                    label="Digite a Quantidade"
-                    style={styles.input}
-                    keyboardType="numeric"
-                />
+          <TextInput
+            label="Digite a Quantidade"
+            style={styles.input}
+            keyboardType="numeric"
+          />
 
-                <TextInput 
-                    label="Descrição"
-                    style={styles.input}
-                    autoCapitalize="none"
-                />
+          <TextInput
+            label="Descrição"
+            style={styles.input}
+            autoCapitalize="none"
+          />
 
-                <BtnPadrao 
-                title="Register"
-                // onPress={() => {
-                //   navigation.navigate('Order')
-                // }}
-                btnColor="#AE0F0A"
-                textColor="white"
-                />
-                
-              <BottomNav />
-            </View>
-        </ScrollView>
+          <BtnPadrao
+            title="Register"
+            btnColor="#AE0F0A"
+            textColor="white"
+          />
+        </View>
+      </ScrollView>
+      <View style={styles.bottomNavContainer}>
+        <BottomNav />
+      </View>
+    </View>
     );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     flex: 1,
-    backgroundColor: '#fff',
   },
-  content: {
-    padding: 24,
-    flex: 1,
-    justifyContent: 'center',
+  scrollContent: {
+    paddingBottom: 80,
+  },
+  formContainer: {
+    padding: 16,
   },
   title: {
     marginBottom: 32,
@@ -85,13 +87,11 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 16,
   },
-  registerLink: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
-  button: {
-    marginTop: 8,
-    paddingVertical: 6,
+  bottomNavContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 
