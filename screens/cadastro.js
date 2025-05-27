@@ -31,13 +31,27 @@ const RegisterScreen = () => {
   }, [userToken, navigation]);
 
   const handleRegister = async () => {
-    if (!nome || !email || !senha || !confirmSenha) {
-      setError("Por favor, preencha todos os campos");
+    setError("");
+    let hasError = false;
+
+    if (!nome) {
+      setError("O nome é obrigatório");
       return;
     }
 
-    if (senha !== confirmSenha) {
-      setError("As senhas não coincidem");
+    if (!email) {
+      setError("O email é obrigatório");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("O email informado não é válido");
+      return;
+    }
+
+    if (!senha) {
+      setError("A senha é obrigatória");
       return;
     }
 
@@ -46,8 +60,12 @@ const RegisterScreen = () => {
       return;
     }
 
+    if (senha !== confirmSenha) {
+      setError("As senhas não coincidem");
+      return;
+    }
+
     setIsLoading(true);
-    setError("");
 
     try {
       const result = await register(nome, email, senha);
@@ -58,7 +76,7 @@ const RegisterScreen = () => {
       }
     } catch (err) {
       if (err.message.includes("409")) {
-        setError("Este email já está cadastrado");
+        setError("O email informado já está cadastrado");
       } else {
         setError("Falha no cadastro. Tente novamente.");
       }
