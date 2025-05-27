@@ -64,7 +64,7 @@ const OrderCard = ({
                 <Menu.Item onPress={() => handleStatusSelect("Negado")} title="Negado" />
               </Menu>
             ) : (
-              <Text variant="titleMedium" style={styles.statusText}>{status}</Text>
+              <Text variant="titleMedium" style={styles.statusText}>{currentStatus}</Text>
             )}
           </View>
 
@@ -83,10 +83,18 @@ const OrderCard = ({
         </Card.Content>
 
         <Card.Actions style={styles.actions}>
-          {status === "Pendente" && !isAdmin && (
+          {currentStatus === "Pendente" && !isAdmin && (
             <BtnPadrao
               title={"Editar"}
               onPress={() => console.log("Editar")}
+              btnColor="#155DFC"
+              style={styles.button}
+            />
+          )}
+          {currentStatus === "Negado" && (
+            <BtnPadrao
+              title={"Ver Justificativa"}
+              onPress={() => console.log("Ver Justificativa")}
               btnColor="#155DFC"
               style={styles.button}
             />
@@ -97,14 +105,6 @@ const OrderCard = ({
             btnColor="#155DFC"
             style={styles.button}
           />
-          {status === "Negado" && (
-            <BtnPadrao
-              title={"Ver Justificativa"}
-              onPress={() => console.log("Ver Justificativa")}
-              btnColor="#155DFC"
-              style={styles.button}
-            />
-          )}
         </Card.Actions>
       </Card>
       <View style={[styles.statusStrip, { backgroundColor: getStatusColor(currentStatus) }]} />
