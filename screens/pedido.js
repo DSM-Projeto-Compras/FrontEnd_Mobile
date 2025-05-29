@@ -1,13 +1,5 @@
 import react, { useState, useEffect } from "react";
-import {
-  TextInput,
-  Button,
-  Text,
-  List,
-  Chip,
-  Divider,
-  Surface,
-} from "react-native-paper";
+import { TextInput, Text, List, Surface } from "react-native-paper";
 import {
   StyleSheet,
   View,
@@ -82,9 +74,9 @@ const OrderScreen = () => {
   };
 
   const handleSuggestionPress = async (suggestion) => {
+    clearProducts();
     setProductName(suggestion);
     setIsSuggestionSelected(true);
-    clearProducts();
 
     try {
       const cod_id = await searchProduct(suggestion);
