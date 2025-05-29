@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, StyleSheet } from "react-native";
-import { Card, Text, Menu, Divider } from "react-native-paper";
+import { Card, Text, Menu, Divider, Portal } from "react-native-paper";
 import BtnPadrao from "./button";
+import InfoModal from "./infoModal";
 
 const OrderCard = ({
   itemName,
@@ -15,6 +16,8 @@ const OrderCard = ({
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(status);
+
+  const modalRef = useRef();
 
   const getStatusColor = (statusValue = currentStatus) => {
     switch (statusValue) {
@@ -101,13 +104,14 @@ const OrderCard = ({
           )}
           <BtnPadrao
             title={"Ver Detalhes"}
-            onPress={() => console.log("Ver Detalhes")}
+            onPress={() => modalRef.current?.showModal()}
             btnColor="#155DFC"
             style={styles.button}
           />
         </Card.Actions>
       </Card>
       <View style={[styles.statusStrip, { backgroundColor: getStatusColor(currentStatus) }]} />
+      <InfoModal ref={modalRef} />
     </View>
   );
 };
