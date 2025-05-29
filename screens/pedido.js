@@ -85,16 +85,60 @@ const OrderScreen = () => {
     clearProducts();
 
     try {
-      const htmlResponse = await searchProduct(suggestion);
-      const cod_id = suggestion.split(" ")[0];
+      const cod_id = await searchProduct(suggestion);
 
       if (cod_id) {
         const detailsResponse = await getProductDetails(cod_id);
 
+        const classeMatch = detailsResponse.match(
+          /id="ContentPlaceHolder1_lbClasseInfo"[^>]*>(.*?)<\/span>/i
+        );
+        const materialMatch = detailsResponse.match(
+          /id="ContentPlaceHolder1_lbMaterialInfo"[^>]*>(.*?)<\/span>/i
+        );
+        const elementoDespesaMatch = detailsResponse.match(
+          /id="ContentPlaceHolder1_lbNElementoDespesaInfo"[^>]*>(.*?)<\/span>/i
+        );
+        const naturezaDespesaMatch = detailsResponse.match(
+          /id="ContentPlaceHolder1_lbNdInfo"[^>]*>(.*?)<\/span>/i
+        );
+
+        let classe =
+          classeMatch && classeMatch[1]
+            ? classeMatch[1].trim()
+            : "Não disponível";
+        classe = classe.split(" ").slice(2).join(" ");
+
+        let material =
+          materialMatch && materialMatch[1]
+            ? materialMatch[1].trim()
+            : "Não disponível";
+        material = material.split(" ").slice(2).join(" ");
+
+        let elementoDespesa =
+          elementoDespesaMatch && elementoDespesaMatch[1]
+            ? elementoDespesaMatch[1].trim().split(" ")[0]
+            : "Não disponível";
+
+        let naturezaDespesa = "Não disponível";
+        if (naturezaDespesaMatch && naturezaDespesaMatch[1]) {
+          naturezaDespesa = naturezaDespesaMatch[1]
+            .replace(/<br\s*\/?>.+<br\s*\/?>/gi, "")
+            .replace(/<br\s*\/?>/gi, "")
+            .trim();
+
+          if (naturezaDespesa) {
+            naturezaDespesa = naturezaDespesa.split(" ")[0];
+          } else {
+            naturezaDespesa = "Não disponível";
+          }
+        }
+
         setProductInfo({
-          material: "Informação do material",
-          elementoDespesa: "Elemento de Despesa",
-          naturezaDespesa: "Natureza de Despesa",
+          classe,
+          material,
+          elementoDespesa,
+          naturezaDespesa,
         });
       }
     } catch (err) {
@@ -119,7 +163,6 @@ const OrderScreen = () => {
 
     setSuccessMessage("Produto solicitado com sucesso!");
 
-    // Resetar formulário
     setProductName("");
     setQuantidade("");
     setDescricao("");
@@ -180,9 +223,22 @@ const OrderScreen = () => {
             {productInfo && (
               <Surface style={styles.productInfo}>
                 <Text style={styles.infoTitle}>Informações do produto</Text>
-                <Text>{productInfo.material}</Text>
-                <Text>{productInfo.elementoDespesa}</Text>
-                <Text>{productInfo.naturezaDespesa}</Text>
+                <Text>
+                  <Text style={styles.infoLabel}>Classe:</Text>{" "}
+                  {productInfo.classe}
+                </Text>
+                <Text>
+                  <Text style={styles.infoLabel}>Material:</Text>{" "}
+                  {productInfo.material}
+                </Text>
+                <Text>
+                  <Text style={styles.infoLabel}>Elemento de Despesa:</Text>{" "}
+                  {productInfo.elementoDespesa}
+                </Text>
+                <Text>
+                  <Text style={styles.infoLabel}>Natureza de Despesa:</Text>{" "}
+                  {productInfo.naturezaDespesa}
+                </Text>
               </Surface>
             )}
 
@@ -317,6 +373,9 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontWeight: "bold",
     marginBottom: 8,
+  },
+  infoLabel: {
+    fontWeight: "bold",
   },
   loadingText: {
     textAlign: "center",

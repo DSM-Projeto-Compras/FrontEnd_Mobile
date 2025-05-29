@@ -61,6 +61,21 @@ export const ProductProvider = ({ children }) => {
       }
 
       const data = await response.text();
+
+      try {
+        const regex =
+          /id="ContentPlaceHolder1_gvResultadoPesquisa_lbTituloItem_0"[^>]*>(.*?)<\/a>/i;
+        const match = data.match(regex);
+
+        if (match && match[1]) {
+          const productId = match[1].trim().split(" ")[0];
+          console.log("ID do produto encontrado:", productId);
+          return productId;
+        }
+      } catch (parseError) {
+        console.error("Erro ao analisar ID do produto:", parseError);
+      }
+
       return data;
     } catch (error) {
       console.error("Erro ao buscar o produto:", error);
@@ -79,6 +94,8 @@ export const ProductProvider = ({ children }) => {
       const url = `${BASE_URL}/CatalogDetalheNovo.aspx?chave=&cod_id=${encodeURIComponent(
         cod_id
       )}&selo=&origem=CatalogoPesquisa3`;
+
+      console.log("Fetching product details from:", url);
 
       const response = await fetch(url, {
         method: "GET",
