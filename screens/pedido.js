@@ -64,6 +64,8 @@ const OrderScreen = () => {
     setProductName(text);
     setIsSuggestionSelected(false);
 
+    setProductInfo(null);
+
     if (typingTimeout) {
       clearTimeout(typingTimeout);
     }
