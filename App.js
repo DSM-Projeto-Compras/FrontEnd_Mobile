@@ -3,6 +3,9 @@ import LoginScreen from "./screens/login";
 import RegisterScreen from "./screens/cadastro";
 import OrderScreen from "./screens/pedido";
 import HistScreen from "./screens/historico";
+import HistAdmScreen from "./screens/historicoAdm";
+import RegisterAdmScreen from "./screens/cadastroAdm";
+import AdmScreen from "./screens/excluirAdm";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider } from "./contexts/AuthContext";
 import { PaperProvider } from "react-native-paper";
@@ -34,6 +37,21 @@ export default function App() {
             <Stack.Screen
               name="Hist"
               component={HistScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="HistAdm"
+              component={HistAdmScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AdmScreen"
+              component={AdmScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="RegisterAdm"
+              component={RegisterAdmScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>
