@@ -165,15 +165,6 @@ const OrderScreen = () => {
     setIsSuggestionSelected(false);
   };
 
-  const renderSuggestion = (item) => (
-    <TouchableOpacity
-      style={styles.suggestionItem}
-      onPress={() => handleSuggestionPress(item)}
-    >
-      <Text>{item}</Text>
-    </TouchableOpacity>
-  );
-
   return (
     <SafeAreaView style={styles.pageContainer}>
       <KeyboardAvoidingView

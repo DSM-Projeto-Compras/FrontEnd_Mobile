@@ -69,7 +69,6 @@ export const ProductProvider = ({ children }) => {
 
         if (match && match[1]) {
           const productId = match[1].trim().split(" ")[0];
-          console.log("ID do produto encontrado:", productId);
           return productId;
         }
       } catch (parseError) {
@@ -94,8 +93,6 @@ export const ProductProvider = ({ children }) => {
       const url = `${BASE_URL}/CatalogDetalheNovo.aspx?chave=&cod_id=${encodeURIComponent(
         cod_id
       )}&selo=&origem=CatalogoPesquisa3`;
-
-      console.log("Fetching product details from:", url);
 
       const response = await fetch(url, {
         method: "GET",
