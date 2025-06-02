@@ -2,10 +2,9 @@ import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import Header from "../components/header";
-import BottomNav from "../components/bottomNavigation";
 import OrderCard from "../components/card"
 
-const HistScreen =()=>{ 
+const HistAdmScreen =()=>{ 
   return(
     <View style={styles.pageContainer}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -35,7 +34,6 @@ const HistScreen =()=>{
         />
       </ScrollView>
       <View style={styles.bottomNavContainer}>
-        <BottomNav />
       </View>
     </View>
   );
@@ -70,4 +68,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HistScreen;
+export default HistAdmScreen;
