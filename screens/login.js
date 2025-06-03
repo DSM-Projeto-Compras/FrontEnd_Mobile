@@ -59,7 +59,7 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (userToken) {
-      navigation.navigate("HistAdm");
+      navigation.navigate("Order");
     }
   }, [userToken, navigation]);
 
