@@ -3,30 +3,33 @@ import { TextInput, Button, Text, List } from "react-native-paper";
 import { StyleSheet, ScrollView, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
-import BottomNav from "../components/bottomNavigation";
+import BottomNavAdm from "../components/bottomNavAdm";
 import BtnPadrao from "../components/button";
 
 const AdmScreen =()=>{
+  const navigation = useNavigation();
     return(
     <View style={styles.pageContainer}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Header />
 
         <Text variant="headlineMedium" style={styles.title}>
-          Faça a requisição do produto desejado
+          Administradores
         </Text>
 
         <View style={styles.formContainer}>
 
-          <BtnPadrao
-            title="Cadastrar Administrador"
-            btnColor="#AE0F0A"
-            textColor="white"
-          />
+        <BtnPadrao
+          title={'Cadastrar'}
+          onPress={() => navigation.navigate("RegisterAdm")}
+          btnColor="#AE0F0A"
+          textColor="white"
+        />
+
         </View>
       </ScrollView>
       <View style={styles.bottomNavContainer}>
-        <BottomNav />
+        <BottomNavAdm />
       </View>
     </View>
     );

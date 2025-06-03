@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import Header from "../components/header";
 import OrderCard from "../components/card"
+import BtnPadrao from "../components/button";
+import BottomNavAdm from "../components/bottomNavAdm";
 
 const HistAdmScreen =()=>{ 
   return(
@@ -34,6 +36,7 @@ const HistAdmScreen =()=>{
         />
       </ScrollView>
       <View style={styles.bottomNavContainer}>
+          <BottomNavAdm />
       </View>
     </View>
   );
