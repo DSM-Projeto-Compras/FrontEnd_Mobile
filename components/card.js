@@ -10,9 +10,13 @@ const OrderCard = ({
   orderDate,
   status = "Pendente",
   nomeSolicitante = "Marcelo",
+  type,
+  category,
+  description,
   isAdmin = true,
   onStatusChange = () => {},
   id,
+  onVerDetalhes = () => {},
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(status);
@@ -104,7 +108,17 @@ const OrderCard = ({
           )}
           <BtnPadrao
             title={"Ver Detalhes"}
-            onPress={() => modalRef.current?.showModal()}
+            onPress={() => onVerDetalhes({
+              itemName,
+              quantity,
+              orderDate,
+              nomeSolicitante,
+              status: currentStatus,
+              type,
+              category,
+              description,
+              id,
+            })}
             btnColor="#155DFC"
             style={styles.button}
           />
