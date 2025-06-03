@@ -5,7 +5,7 @@ import OrderScreen from "./screens/pedido";
 import HistScreen from "./screens/historico";
 import HistAdmScreen from "./screens/historicoAdm";
 import RegisterAdmScreen from "./screens/cadastroAdm";
-import AdmScreen from "./screens/excluirAdm";
+import AdmScreen from "./screens/listaAdm";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider } from "./contexts/AuthContext";
 import { PaperProvider } from "react-native-paper";

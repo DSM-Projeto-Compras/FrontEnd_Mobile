@@ -10,81 +10,11 @@ import { TextInput, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
 import BtnPadrao from "../components/button";
-import { useAuth } from "../contexts/AuthContext";
+import BottomNavAdm from "../components/bottomNavAdm";
+
 
 const RegisterAdmScreen = () => {
   const navigation = useNavigation();
-  const { register, userToken } = useAuth();
-
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [confirmSenha, setConfirmSenha] = useState("");
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (userToken) {
-      navigation.navigate("Order");
-    }
-  }, [userToken, navigation]);
-
-  const handleRegister = async () => {
-    setError("");
-    let hasError = false;
-
-    if (!nome) {
-      setError("O nome é obrigatório");
-      return;
-    }
-
-    if (!email) {
-      setError("O email é obrigatório");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("O email informado não é válido");
-      return;
-    }
-
-    if (!senha) {
-      setError("A senha é obrigatória");
-      return;
-    }
-
-    if (senha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
-      return;
-    }
-
-    if (senha !== confirmSenha) {
-      setError("As senhas não coincidem");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const result = await register(nome, email, senha);
-
-      if (result.success) {
-        alert("Cadastro realizado com sucesso! Por favor, faça login.");
-        navigation.navigate("Login");
-      }
-    } catch (err) {
-      if (err.message.includes("409")) {
-        setError("O email informado já está cadastrado");
-      } else {
-        setError("Falha no cadastro. Tente novamente.");
-      }
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <KeyboardAvoidingView
@@ -99,7 +29,6 @@ const RegisterAdmScreen = () => {
 
         <TextInput
           label="Nome"
-          value={nome}
           style={styles.input}
           keyboardType="default"
           autoCapitalize="words"
@@ -107,7 +36,6 @@ const RegisterAdmScreen = () => {
 
         <TextInput
           label="Email"
-          value={email}
           style={styles.input}
           keyboardType="email-address"
           autoCapitalize="none"
@@ -115,31 +43,26 @@ const RegisterAdmScreen = () => {
 
         <TextInput
           label="Senha"
-          value={senha}
           secureTextEntry
           style={styles.input}
         />
 
         <TextInput
           label="Digite a senha novamente"
-          value={confirmSenha}
           secureTextEntry
           style={styles.input}
         />
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
         <BtnPadrao
-          title={isLoading ? "Cadastrando..." : "Cadastrar Conta"}
+          title={"Cadastrar Conta"}
           btnColor="#AE0F0A"
           textColor="white"
-          disabled={isLoading}
         />
 
-        {isLoading && (
-          <ActivityIndicator style={styles.loader} color="#AE0F0A" />
-        )}
 
+      <View style={styles.bottomNavContainer}>
+          <BottomNavAdm />
+      </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -149,6 +72,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  bottomNavContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   content: {
     padding: 24,
