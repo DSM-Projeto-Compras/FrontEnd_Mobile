@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (nome, email, senha) => {
     try {
-      console.log(API_BASEURL)
       const response = await fetch(`${API_BASEURL}/logins/cadastro`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
