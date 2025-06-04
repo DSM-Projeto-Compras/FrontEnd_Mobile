@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, StyleSheet } from "react-native";
-import { Card, Text, Menu, Divider } from "react-native-paper";
+import { Card, Text, Menu, Divider, Portal } from "react-native-paper";
 import BtnPadrao from "./button";
+import InfoModal from "./infoModal";
 
 const OrderCard = ({
   itemName,
@@ -9,12 +10,18 @@ const OrderCard = ({
   orderDate,
   status = "Pendente",
   nomeSolicitante = "Marcelo",
+  productType,
+  category,
+  description,
   isAdmin = true,
+  justificativa = "Grande quantidade do produto já foi requisitado recentemente",
   onStatusChange = () => {},
   id,
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(status);
+
+  const modalRef = useRef();
 
   const getStatusColor = (statusValue = currentStatus) => {
     switch (statusValue) {
@@ -36,6 +43,24 @@ const OrderCard = ({
     setCurrentStatus(newStatus);
     closeMenu();
     onStatusChange(id, newStatus);
+  };
+
+  const openModal = (type) => {
+    modalRef.current?.showModal(
+      {
+        itemName,
+        quantity,
+        orderDate,
+        nomeSolicitante,
+        status: currentStatus,
+        productType,
+        category,
+        description,
+        justificativa,
+        id,
+      },
+      type
+    );
   };
 
   return (
@@ -92,22 +117,23 @@ const OrderCard = ({
             />
           )}
           {currentStatus === "Negado" && (
-            <BtnPadrao
+             <BtnPadrao
               title={"Ver Justificativa"}
-              onPress={() => console.log("Ver Justificativa")}
+              onPress={() => openModal("justificativa")}
               btnColor="#155DFC"
               style={styles.button}
             />
           )}
           <BtnPadrao
             title={"Ver Detalhes"}
-            onPress={() => console.log("Ver Detalhes")}
+            onPress={() => openModal("detalhes")}
             btnColor="#155DFC"
             style={styles.button}
           />
         </Card.Actions>
       </Card>
       <View style={[styles.statusStrip, { backgroundColor: getStatusColor(currentStatus) }]} />
+      <InfoModal ref={modalRef} />
     </View>
   );
 };
