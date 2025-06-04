@@ -10,13 +10,13 @@ const OrderCard = ({
   orderDate,
   status = "Pendente",
   nomeSolicitante = "Marcelo",
-  type,
+  productType,
   category,
   description,
   isAdmin = true,
+  justificativa = "Grande quantidade do produto já foi requisitado recentemente",
   onStatusChange = () => {},
   id,
-  onVerDetalhes = () => {},
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(status);
@@ -43,6 +43,24 @@ const OrderCard = ({
     setCurrentStatus(newStatus);
     closeMenu();
     onStatusChange(id, newStatus);
+  };
+
+  const openModal = (type) => {
+    modalRef.current?.showModal(
+      {
+        itemName,
+        quantity,
+        orderDate,
+        nomeSolicitante,
+        status: currentStatus,
+        productType,
+        category,
+        description,
+        justificativa,
+        id,
+      },
+      type
+    );
   };
 
   return (
@@ -99,26 +117,16 @@ const OrderCard = ({
             />
           )}
           {currentStatus === "Negado" && (
-            <BtnPadrao
+             <BtnPadrao
               title={"Ver Justificativa"}
-              onPress={() => console.log("Ver Justificativa")}
+              onPress={() => openModal("justificativa")}
               btnColor="#155DFC"
               style={styles.button}
             />
           )}
           <BtnPadrao
             title={"Ver Detalhes"}
-            onPress={() => onVerDetalhes({
-              itemName,
-              quantity,
-              orderDate,
-              nomeSolicitante,
-              status: currentStatus,
-              type,
-              category,
-              description,
-              id,
-            })}
+            onPress={() => openModal("detalhes")}
             btnColor="#155DFC"
             style={styles.button}
           />
