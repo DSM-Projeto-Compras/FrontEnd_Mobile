@@ -15,6 +15,14 @@ const HistAdmScreen = () => {
     modalRef.current?.showModal(itemData);
   };
 
+  const sortedProducts = React.useMemo(() => {
+    return [...allProducts].sort((a, b) => {
+      const dateA = new Date(a.data || a.orderDate || 0);
+      const dateB = new Date(b.data || b.orderDate || 0);
+      return dateB - dateA;
+    });
+  }, [allProducts]);
+
   return (
     <View style={styles.pageContainer}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -44,7 +52,7 @@ const HistAdmScreen = () => {
 
         {!loading &&
           !error &&
-          allProducts.map((product, index) => (
+          sortedProducts.map((product, index) => (
             <OrderCard
               key={product._id || product.id || `product-${index}`}
               itemName={product.nome || product.name}
