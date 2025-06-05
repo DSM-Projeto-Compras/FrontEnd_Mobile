@@ -137,4 +137,4 @@ export const BECProvider = ({ children }) => {
   );
 };
 
-export const useProducts = () => useContext(BECContext);
+export const useBECSearch = () => useContext(BECContext);

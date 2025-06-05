@@ -50,7 +50,6 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  // Buscar produto por ID
   const getProductById = async (id) => {
     try {
       setLoading(true);
@@ -71,23 +70,32 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  // Criar novo produto
   const createProduct = async (productData) => {
     try {
       setLoading(true);
       setError(null);
+      
+      console.log("Dados enviados:", JSON.stringify(productData, null, 2));
+      
       const response = await fetch(`${API_BASEURL}/products`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(productData),
       });
+      
+      console.log("Response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error("Erro ao criar produto");
+        const errorData = await response.text();
+        console.log("Erro da API:", errorData);
+        throw new Error(`Erro ${response.status}: ${errorData}`);
       }
+      
       const newProduct = await response.json();
       setProducts((prev) => [...prev, newProduct]);
       return newProduct;
     } catch (err) {
+      console.log("Erro completo:", err);
       setError(err.message);
       throw err;
     } finally {
@@ -95,7 +103,6 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  // Atualizar produto
   const updateProduct = async (id, productData) => {
     try {
       setLoading(true);
@@ -121,7 +128,6 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  // Deletar produto
   const deleteProduct = async (id) => {
     try {
       setLoading(true);
@@ -143,7 +149,6 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  // Carregar produtos na inicialização quando userToken estiver disponível
   useEffect(() => {
     if (userToken) {
       getProducts();
