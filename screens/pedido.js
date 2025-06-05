@@ -12,7 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
 import BottomNav from "../components/bottomNavigation";
 import BtnPadrao from "../components/button";
-import { useProducts } from "../contexts/ProductContext";
+import { useProducts } from "../contexts/BECContext";
 
 const OrderScreen = () => {
   const navigation = useNavigation();
