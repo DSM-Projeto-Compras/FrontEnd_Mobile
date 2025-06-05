@@ -75,19 +75,14 @@ export const ProductProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      console.log("Dados enviados:", JSON.stringify(productData, null, 2));
-      
       const response = await fetch(`${API_BASEURL}/products`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(productData),
       });
       
-      console.log("Response status:", response.status);
-      
       if (!response.ok) {
         const errorData = await response.text();
-        console.log("Erro da API:", errorData);
         throw new Error(`Erro ${response.status}: ${errorData}`);
       }
       
@@ -95,7 +90,6 @@ export const ProductProvider = ({ children }) => {
       setProducts((prev) => [...prev, newProduct]);
       return newProduct;
     } catch (err) {
-      console.log("Erro completo:", err);
       setError(err.message);
       throw err;
     } finally {

@@ -171,7 +171,6 @@ const OrderScreen = () => {
         }),
       };
 
-      console.log("Produto a ser criado:", productData);
       await createProduct(productData);
 
       setSuccessMessage("Produto solicitado com sucesso!");
