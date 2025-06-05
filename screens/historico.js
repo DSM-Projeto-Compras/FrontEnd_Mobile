@@ -69,6 +69,7 @@ const HistScreen = () => {
               description={product.descricao || product.description || ""}
               status={product.status || "Pendente"}
               nomeSolicitante={product.userId?.nome || "Não informado"}
+              justificativa={product.justificativa || ""}
               isAdmin={false}
               onVerDetalhes={abrirDetalhes}
             />
