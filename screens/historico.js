@@ -46,17 +46,22 @@ const HistScreen = () => {
           !error &&
           products.map((product, index) => (
             <OrderCard
-              key={product.id || `product-${index}`}
-              itemName={product.name || product.nome}
-              quantity={product.quantity || 1}
+              key={product._id || product.id || `product-${index}`}
+              itemName={product.nome || product.name}
+              quantity={product.quantidade || product.quantity || 1}
               orderDate={
-                product.orderDate || new Date().toLocaleDateString("pt-BR")
+                product.data
+                  ? new Date(product.data).toLocaleDateString("pt-BR")
+                  : product.orderDate || new Date().toLocaleDateString("pt-BR")
               }
               productType={
-                product.type || product.tipo || "material-de-consumo"
+                product.tipo || product.type || "material-de-consumo"
               }
-              category={product.category || product.categoria || "geral"}
-              description={product.description || product.descricao || ""}
+              category={product.categoria || product.category || "geral"}
+              description={product.descricao || product.description || ""}
+              status={product.status || "Pendente"}
+              nomeSolicitante={product.userId?.nome || "Não informado"}
+              isAdmin={false}
               onVerDetalhes={abrirDetalhes}
             />
           ))}

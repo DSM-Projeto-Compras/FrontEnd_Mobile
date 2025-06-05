@@ -15,7 +15,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const { login, userToken } = useAuth();
+  const { login, userToken, isAdmin } = useAuth();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -59,9 +59,13 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (userToken) {
-      navigation.navigate("Order");
+      if (isAdmin) {
+        navigation.navigate("HistAdm");
+      } else {
+        navigation.navigate("Order");
+      }
     }
-  }, [userToken, navigation]);
+  }, [userToken, isAdmin, navigation]);
 
   return (
     <KeyboardAvoidingView
