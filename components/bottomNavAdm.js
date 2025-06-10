@@ -1,7 +1,7 @@
 import * as React from "react";
 import { View, StyleSheet } from "react-native";
 import { BottomNavigation } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useAuth } from "../contexts/AuthContext";
 
 const BottomNavAdm = () => {
@@ -13,10 +13,14 @@ const BottomNavAdm = () => {
     {
       key: "history",
       title: "Histórico",
-      focusedIcon: "history"
-      
+      focusedIcon: "history",
     },
-    { key: "admins", title: "Administradores", focusedIcon: "clipboard-text-multiple", unfocusedIcon: "clipboard-text-multiple-outline", },
+    {
+      key: "admins",
+      title: "Administradores",
+      focusedIcon: "clipboard-text-multiple",
+      unfocusedIcon: "clipboard-text-multiple-outline",
+    },
     { key: "logout", title: "Sair", focusedIcon: "logout" },
   ];
 
@@ -31,6 +35,28 @@ const BottomNavAdm = () => {
       console.error("Erro ao fazer logout:", error);
     }
   };
+
+  const getIndexFromRouteName = (routeName) => {
+    switch (routeName) {
+      case "HistAdm":
+        return 0; // history
+      case "AdmScreen":
+        return 1; // admins
+      default:
+        return 0;
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const currentRoute =
+        navigation.getState()?.routes[navigation.getState()?.index];
+      if (currentRoute) {
+        const newIndex = getIndexFromRouteName(currentRoute.name);
+        setIndex(newIndex);
+      }
+    }, [navigation])
+  );
 
   return (
     <View style={styles.container}>

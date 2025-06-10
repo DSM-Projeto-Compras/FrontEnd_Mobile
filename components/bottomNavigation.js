@@ -1,7 +1,7 @@
 import * as React from "react";
 import { View, StyleSheet } from "react-native";
 import { BottomNavigation } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useAuth } from "../contexts/AuthContext";
 
 const BottomNav = () => {
@@ -31,6 +31,28 @@ const BottomNav = () => {
       console.error("Erro ao fazer logout:", error);
     }
   };
+
+  const getIndexFromRouteName = (routeName) => {
+    switch (routeName) {
+      case "Order":
+        return 0; // request
+      case "Hist":
+        return 1; // history
+      default:
+        return 0;
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const currentRoute =
+        navigation.getState()?.routes[navigation.getState()?.index];
+      if (currentRoute) {
+        const newIndex = getIndexFromRouteName(currentRoute.name);
+        setIndex(newIndex);
+      }
+    }, [navigation])
+  );
 
   return (
     <View style={styles.container}>
