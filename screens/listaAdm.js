@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
 import BottomNavAdm from "../components/bottomNavAdm";
 import BtnPadrao from "../components/button";
+import EmailCard from "../components/cardAdmin";
 
 const AdmScreen =()=>{
   const navigation = useNavigation();
@@ -24,6 +25,12 @@ const AdmScreen =()=>{
           onPress={() => navigation.navigate("RegisterAdm")}
           btnColor="#AE0F0A"
           textColor="white"
+        />
+
+        <EmailCard
+          name="Eduardo Brando Almeida"
+          email="eduardo@email.com"
+          onDelete={() => console.log('Deletar')}
         />
 
         </View>
