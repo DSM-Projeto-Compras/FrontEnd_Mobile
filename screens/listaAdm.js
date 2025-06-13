@@ -18,6 +18,18 @@ const AdmScreen =()=>{
           Administradores
         </Text>
 
+        <EmailCard
+          name="Eduardo Brando Almeida"
+          email="eduardo@email.com"
+          onDelete={() => console.log('Deletar')}
+        />
+
+        <EmailCard
+          name="Paulo César Apaecido Quezada e Vasconcelos Victório"
+          email="paulao@email.com"
+          onDelete={() => console.log('Deletar')}
+        />
+
         <View style={styles.formContainer}>
 
         <BtnPadrao
@@ -26,13 +38,6 @@ const AdmScreen =()=>{
           btnColor="#AE0F0A"
           textColor="white"
         />
-
-        <EmailCard
-          name="Eduardo Brando Almeida"
-          email="eduardo@email.com"
-          onDelete={() => console.log('Deletar')}
-        />
-
         </View>
       </ScrollView>
       <View style={styles.bottomNavContainer}>

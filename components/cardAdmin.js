@@ -21,7 +21,7 @@ const EmailCard = ({ name, email, onDelete }) => {
           icon="trash-can"
           size={32}
           iconColor="white"
-          containerColor={theme.colors.primary}
+          containerColor="#AE0F0A"
           style={styles.deleteButton}
           onPress={onDelete}
         />
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: '#EDE7F6',
     borderRadius: 12,
-    height: 80
+    height: 'auto'
   },
   content: {
     flexDirection: 'row',
