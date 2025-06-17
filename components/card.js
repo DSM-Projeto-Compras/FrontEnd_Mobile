@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { Card, Text, Menu, Divider, Portal } from "react-native-paper";
 import BtnPadrao from "./button";
 import InfoModal from "./infoModal";
+import FormModal from "./formModal";
 
 const OrderCard = ({
   itemName,
@@ -22,6 +23,8 @@ const OrderCard = ({
   const [currentStatus, setCurrentStatus] = useState(status);
 
   const modalRef = useRef();
+  const negarModalRef = useRef();
+
 
   const getStatusColor = (statusValue = currentStatus) => {
     switch (statusValue) {
@@ -40,9 +43,26 @@ const OrderCard = ({
   const closeMenu = () => setMenuVisible(false);
 
   const handleStatusSelect = (newStatus) => {
-    setCurrentStatus(newStatus);
+    // setCurrentStatus(newStatus);
+    // closeMenu();
+    // onStatusChange(id, newStatus);
     closeMenu();
-    onStatusChange(id, newStatus);
+
+    if (newStatus === "Negado") {
+      negarModalRef.current?.showModal({
+        id,
+        itemName,
+        nomeSolicitante,
+        quantity,
+        orderDate,
+        productType,
+        category,
+        description,
+      });
+    } else {
+      setCurrentStatus(newStatus);
+      onStatusChange(id, newStatus);
+    }
   };
 
   const openModal = (type) => {
@@ -134,6 +154,13 @@ const OrderCard = ({
       </Card>
       <View style={[styles.statusStrip, { backgroundColor: getStatusColor(currentStatus) }]} />
       <InfoModal ref={modalRef} />
+      <FormModal
+        ref={negarModalRef}
+        onSubmitJustificativa={(justificativa) => {
+          setCurrentStatus("Negado");
+          onStatusChange(id, "Negado", justificativa); // envia a justificativa
+        }}s
+      />
     </View>
   );
 };
