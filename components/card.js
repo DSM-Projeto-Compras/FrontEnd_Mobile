@@ -58,7 +58,10 @@ const OrderCard = ({
         productType,
         category,
         description,
-      });
+      },
+      "justificativa"
+    
+    );
     } else {
       setCurrentStatus(newStatus);
       onStatusChange(id, newStatus);
@@ -159,7 +162,7 @@ const OrderCard = ({
         onSubmitJustificativa={(justificativa) => {
           setCurrentStatus("Negado");
           onStatusChange(id, "Negado", justificativa); // envia a justificativa
-        }}s
+        }}
       />
     </View>
   );

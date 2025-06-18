@@ -100,18 +100,38 @@ export default FormModal;
 const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
-    marginBottom: 16,
+    fontSize: 22,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#CCC',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 12,
+    borderColor: '#CCCCCC',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 12,
+    marginBottom: 16,
+    backgroundColor: '#FAFAFA',
+    textAlignVertical: 'top',
   },
   buttonGroup: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
+    justifyContent: 'flex-end',
+    gap: 10, // se seu React Native não suporta `gap`, substitua por marginRight nos botões
+    marginTop: 20,
+  },
+  cancelButton: {
+    backgroundColor: '#B0B0B0',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  confirmButton: {
+    backgroundColor: '#D32F2F',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
   },
 });
+
