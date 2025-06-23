@@ -1,5 +1,5 @@
 import react, { useState, useEffect } from "react";
-import { TextInput, Text, List, Surface } from "react-native-paper";
+import { TextInput, Text, Surface } from "react-native-paper";
 import {
   StyleSheet,
   View,
@@ -8,27 +8,25 @@ import {
   Platform,
   SafeAreaView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
 import BottomNav from "../components/bottomNavigation";
 import BtnPadrao from "../components/button";
-import { useProducts } from "../contexts/ProductContext";
+import { useBECSearch } from "../contexts/BECContext";
+import { useProduct } from "../contexts/ProductContext";
 
 const OrderScreen = () => {
-  const navigation = useNavigation();
   const {
     products,
-    productDetails,
     isLoading,
-    error,
     getProducts,
     searchProduct,
     getProductDetails,
     clearProducts,
-  } = useProducts();
+  } = useBECSearch();
+
+  const { createProduct, loading: productLoading } = useProduct();
 
   const [expanded, setExpanded] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(null);
   const [productName, setProductName] = useState("");
   const [quantidade, setQuantidade] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -44,13 +42,6 @@ const OrderScreen = () => {
       clearProducts();
     };
   }, []);
-
-  const handleAccordionPress = () => setExpanded(!expanded);
-
-  const handleItemPress = (x) => {
-    setSelectedValue(x);
-    setExpanded(false);
-  };
 
   const handleProductSearch = (text) => {
     setProductName(text);
@@ -141,7 +132,7 @@ const OrderScreen = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSuccessMessage(null);
     setErrorMessage(null);
 
@@ -150,19 +141,52 @@ const OrderScreen = () => {
       return;
     }
 
-    if (!productName || !quantidade || !selectedValue) {
+    if (!productName || !quantidade) {
       setErrorMessage("Preencha todos os campos obrigatórios.");
       return;
     }
 
-    setSuccessMessage("Produto solicitado com sucesso!");
+    try {
+      let tipo = "material-de-consumo";
 
-    setProductName("");
-    setQuantidade("");
-    setDescricao("");
-    setSelectedValue(null);
-    setProductInfo(null);
-    setIsSuggestionSelected(false);
+      if (productInfo) {
+        if (
+          productInfo.naturezaDespesa &&
+          productInfo.naturezaDespesa.startsWith("4")
+        ) {
+          tipo = "material-permanente";
+        }
+      }
+
+      const productData = {
+        nome: productName.trim(),
+        quantidade: parseInt(quantidade),
+        descricao: descricao?.trim() || "",
+        tipo: tipo,
+        ...(productInfo && {
+          categoria: productInfo.classe || "",
+          material: productInfo.material || "",
+          elementoDespesa: productInfo.elementoDespesa || "",
+          naturezaDespesa: productInfo.naturezaDespesa || "",
+        }),
+      };
+
+      await createProduct(productData);
+
+      setSuccessMessage("Produto solicitado com sucesso!");
+
+      setProductName("");
+      setQuantidade("");
+      setDescricao("");
+      setProductInfo(null);
+      setIsSuggestionSelected(false);
+      clearProducts();
+    } catch (error) {
+      console.error("Erro ao criar produto:", error);
+      setErrorMessage(
+        error.message || "Erro ao solicitar produto. Tente novamente."
+      );
+    }
   };
 
   return (
@@ -235,39 +259,6 @@ const OrderScreen = () => {
               onChangeText={setQuantidade}
             />
 
-            <List.Section>
-              <List.Accordion
-                title={selectedValue == null ? "Categoria*" : selectedValue}
-                expanded={expanded}
-                onPress={handleAccordionPress}
-              >
-                <List.Item
-                  title="Material de Escritório"
-                  onPress={() => handleItemPress("Material de Escritório")}
-                />
-                <List.Item
-                  title="Equipamentos de Informática"
-                  onPress={() => handleItemPress("Equipamentos de Informática")}
-                />
-                <List.Item
-                  title="Material de Limpeza"
-                  onPress={() => handleItemPress("Material de Limpeza")}
-                />
-                <List.Item
-                  title="Materiais Didáticos"
-                  onPress={() => handleItemPress("Materiais Didáticos")}
-                />
-                <List.Item
-                  title="Equipamentos de Laboratório"
-                  onPress={() => handleItemPress("Equipamentos de Laboratório")}
-                />
-                <List.Item
-                  title="Outro"
-                  onPress={() => handleItemPress("Outro")}
-                />
-              </List.Accordion>
-            </List.Section>
-
             <TextInput
               label="Descrição"
               style={styles.input}
@@ -279,10 +270,11 @@ const OrderScreen = () => {
             />
 
             <BtnPadrao
-              title="Enviar Requisição"
+              title={productLoading ? "Enviando..." : "Enviar Requisição"}
               btnColor="#AE0F0A"
               textColor="white"
               onPress={handleSubmit}
+              disabled={productLoading}
             />
 
             {errorMessage && (
@@ -330,23 +322,33 @@ const styles = StyleSheet.create({
   inputContainer: {
     position: "relative",
     zIndex: 10,
+    marginBottom: 16,
   },
   suggestionsContainer: {
     position: "absolute",
     top: 56,
     left: 0,
     right: 0,
-    backgroundColor: "white",
+    backgroundColor: "#ffffff",
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 4,
-    zIndex: 20,
+    zIndex: 1000,
     maxHeight: 200,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   suggestionItem: {
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+    backgroundColor: "#ffffff",
   },
   productInfo: {
     padding: 16,

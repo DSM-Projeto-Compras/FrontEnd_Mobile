@@ -1,140 +1,167 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
+import { API_BASEURL } from "@env";
 
 const ProductContext = createContext();
 
-const BASE_URL = "https://www.bec.sp.gov.br/BEC_Catalogo_ui";
+export const useProduct = () => {
+  const context = useContext(ProductContext);
+  if (!context) {
+    throw new Error("useProduct deve ser usado dentro de um ProductProvider");
+  }
+  return context;
+};
 
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
-  const [productDetails, setProductDetails] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { userToken } = useAuth();
 
-  const getProducts = async (prefixText, count = 20) => {
-    setIsLoading(true);
-    setError(null);
+  const getAuthHeaders = () => {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    if (userToken) {
+      headers["access-token"] = userToken;
+    }
+    return headers;
+  };
 
+  // Buscar todos os produtos
+  const getProducts = async () => {
     try {
-      const url = `${BASE_URL}/WebService/AutoComplete.asmx/GetItensList`;
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      const body = JSON.stringify({ prefixText, count });
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers,
-        body,
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`${API_BASEURL}/products`, {
+        headers: getAuthHeaders(),
       });
-
       if (!response.ok) {
-        throw new Error("Erro ao buscar produtos.");
+        throw new Error("Erro ao buscar produtos");
       }
-
       const data = await response.json();
-      setProducts(data.d || []);
-      return data.d;
-    } catch (error) {
-      console.error("Erro ao buscar produtos:", error);
-      setError(error.message);
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const searchProduct = async (description) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const url = `${BASE_URL}/CatalogoPesquisa3.aspx?chave=&pesquisa=Y&cod_id=&ds_item=${encodeURIComponent(
-        description
-      )}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao buscar o produto.");
-      }
-
-      const data = await response.text();
-
-      try {
-        const regex =
-          /id="ContentPlaceHolder1_gvResultadoPesquisa_lbTituloItem_0"[^>]*>(.*?)<\/a>/i;
-        const match = data.match(regex);
-
-        if (match && match[1]) {
-          const productId = match[1].trim().split(" ")[0];
-          return productId;
-        }
-      } catch (parseError) {
-        console.error("Erro ao analisar ID do produto:", parseError);
-      }
-
+      setProducts(data);
       return data;
-    } catch (error) {
-      console.error("Erro ao buscar o produto:", error);
-      setError(error.message);
-      return "";
+    } catch (err) {
+      setError(err.message);
+      throw err;
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const getProductDetails = async (cod_id) => {
-    setIsLoading(true);
-    setError(null);
-
+  const getProductById = async (id) => {
     try {
-      const url = `${BASE_URL}/CatalogDetalheNovo.aspx?chave=&cod_id=${encodeURIComponent(
-        cod_id
-      )}&selo=&origem=CatalogoPesquisa3`;
-
-      const response = await fetch(url, {
-        method: "GET",
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`${API_BASEURL}/products/${id}`, {
+        headers: getAuthHeaders(),
       });
-
       if (!response.ok) {
-        throw new Error("Erro ao obter detalhes do produto.");
+        throw new Error("Erro ao buscar produto");
       }
-
-      const data = await response.text();
-      setProductDetails(data);
+      const data = await response.json();
       return data;
-    } catch (error) {
-      console.error("Erro ao obter detalhes do produto:", error);
-      setError(error.message);
-      return "";
+    } catch (err) {
+      setError(err.message);
+      throw err;
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const clearProducts = () => {
-    setProducts([]);
-    setProductDetails(null);
+  const createProduct = async (productData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch(`${API_BASEURL}/products`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(productData),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Erro ${response.status}: ${errorData}`);
+      }
+      
+      const newProduct = await response.json();
+      setProducts((prev) => [...prev, newProduct]);
+      return newProduct;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateProduct = async (id, productData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`${API_BASEURL}/products/${id}`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(productData),
+      });
+      if (!response.ok) {
+        throw new Error("Erro ao atualizar produto");
+      }
+      const updatedProduct = await response.json();
+      setProducts((prev) =>
+        prev.map((product) => (product.id === id ? updatedProduct : product))
+      );
+      return updatedProduct;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteProduct = async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`${API_BASEURL}/products/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!response.ok) {
+        throw new Error("Erro ao deletar produto");
+      }
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+      return true;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (userToken) {
+      getProducts();
+    }
+  }, [userToken]);
+
+  const value = {
+    products,
+    loading,
+    error,
+    getProducts,
+    getProductById,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    setError,
   };
 
   return (
-    <ProductContext.Provider
-      value={{
-        products,
-        productDetails,
-        isLoading,
-        error,
-        getProducts,
-        searchProduct,
-        getProductDetails,
-        clearProducts,
-      }}
-    >
-      {children}
-    </ProductContext.Provider>
+    <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
   );
 };
-
-export const useProducts = () => useContext(ProductContext);

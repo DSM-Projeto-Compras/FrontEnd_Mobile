@@ -1,64 +1,79 @@
 import React, { useRef } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, ActivityIndicator } from "react-native-paper";
 import Header from "../components/header";
 import BottomNav from "../components/bottomNavigation";
 import OrderCard from "../components/card";
 import InfoModal from "../components/infoModal";
+import { useProduct } from "../contexts/ProductContext";
 
 const HistScreen = () => {
   const modalRef = useRef();
+  const { products, loading, error } = useProduct();
 
   const abrirDetalhes = (itemData) => {
     modalRef.current?.showModal(itemData);
   };
 
+  const sortedProducts = React.useMemo(() => {
+    return [...products].sort((a, b) => {
+      const dateA = new Date(a.data || a.orderDate || 0);
+      const dateB = new Date(b.data || b.orderDate || 0);
+      return dateB - dateA;
+    });
+  }, [products]);
+
   return (
     <View style={styles.pageContainer}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Header />
-        <Text variant="headlineMedium" style={styles.title}>Histórico</Text>
+        <Text variant="headlineMedium" style={styles.title}>
+          Histórico
+        </Text>
 
-        <OrderCard 
-          itemName="Caneta"
-          quantity={4}
-          orderDate="10/04/2025"
-          productType="material-de-consumo"
-          category="material-de-escritorio"
-          description="Caneta esferográfica azul para uso do professor"
-          //justificativa="Batata"
-          onVerDetalhes={abrirDetalhes}
-        />
-        <OrderCard 
-          itemName="Caixa de Giz de Cera"
-          quantity={2}
-          orderDate="18/02/2025"
-          productType="material-de-consumo"
-          category="material-de-escritorio"
-          description="Caixa de Giz de cera com cores mistas e pussuindo 12 unidades para utilização em projeto"
-          //justificativa="Cenoura"
-          onVerDetalhes={abrirDetalhes}
-        />
-        <OrderCard 
-          itemName="Condicionador de Ar"
-          quantity={1}
-          orderDate="04/05/2025"
-          productType="material-permanente"
-          category="moveis-equipamentos"
-          description="Ar-Condicionado para instalação na sala de Obras"
-          //justificativa="Beterraba"
-          onVerDetalhes={abrirDetalhes}
-        />
-        <OrderCard 
-          itemName="Chapa de MDF 15mm"
-          quantity={15}
-          orderDate="28/02/2025"
-          productType="material-de-consumo"
-          category="material-de-construcao-manutencao"
-          description="Chapas de MDF para projeto de construção"
-          //justificativa="Mandioca"
-          onVerDetalhes={abrirDetalhes}
-        />
+        {loading && (
+          <View style={styles.centerContainer}>
+            <ActivityIndicator size="large" />
+            <Text style={styles.loadingText}>Carregando produtos...</Text>
+          </View>
+        )}
+
+        {error && (
+          <View style={styles.centerContainer}>
+            <Text style={styles.errorText}>Erro: {error}</Text>
+          </View>
+        )}
+
+        {!loading && !error && products.length === 0 && (
+          <View style={styles.centerContainer}>
+            <Text style={styles.emptyText}>Nenhum produto encontrado</Text>
+          </View>
+        )}
+
+        {!loading &&
+          !error &&
+          sortedProducts.map((product, index) => (
+            <OrderCard
+              key={product._id || product.id || `product-${index}`}
+              itemName={product.nome || product.name}
+              quantity={product.quantidade || product.quantity || 1}
+              orderDate={
+                product.data
+                  ? new Date(product.data).toLocaleDateString("pt-BR")
+                  : product.orderDate || new Date().toLocaleDateString("pt-BR")
+              }
+              productType={
+                product.tipo || product.type || "material-de-consumo"
+              }
+              category={product.categoria || product.category || "geral"}
+              description={product.descricao || product.description || ""}
+              status={product.status || "Pendente"}
+              nomeSolicitante={product.userId?.nome || "Não informado"}
+              justificativa={product.justificativa || ""}
+              isAdmin={false}
+              onVerDetalhes={abrirDetalhes}
+            />
+          ))}
       </ScrollView>
 
       <InfoModal ref={modalRef} />
@@ -82,10 +97,28 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   bottomNavContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  centerContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    textAlign: "center",
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+  },
+  emptyText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#666",
   },
 });
 
