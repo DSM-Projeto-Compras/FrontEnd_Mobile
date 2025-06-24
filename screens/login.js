@@ -115,6 +115,13 @@ const LoginScreen = () => {
             <Text style={styles.registerLink}>Cadastre-se</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.registerContainer}>
+          <Text>Esqueceu sua senha? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Recuperacao")}>
+            <Text style={styles.registerLink}>Clique aqui</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -157,6 +164,15 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 10,
+  },
+  forgotContainer: {
+    justifyContent: "center",
+    marginTop: 12,
+    alignItems: "center",
+  },
+  forgotLink: {
+    color: "#AE0F0A",
+    textDecorationLine: "underline",
   },
 });
 
