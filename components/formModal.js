@@ -1,6 +1,7 @@
 import React, { useImperativeHandle, useState, forwardRef } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import { Modal, Portal, Text, Button } from 'react-native-paper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const FormModal = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false);
@@ -38,7 +39,13 @@ const FormModal = forwardRef((props, ref) => {
     backgroundColor: 'white',
     marginHorizontal: 20,
     borderRadius: 10,
-    padding: 20,
+    padding: 0,
+    maxHeight: '80%', 
+    minHeight: 380,   
+    width: '92%',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    // paddingVertical: 16,
   };
 
   return (
@@ -46,10 +53,15 @@ const FormModal = forwardRef((props, ref) => {
       <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={containerStyle}>
         {modalType === "editar" ? (
           <View style={styles.editModalContainer}>
-            <View style={styles.editContent}>
+            <KeyboardAwareScrollView
+              contentContainerStyle={styles.editContent}
+              enableOnAndroid
+              extraScrollHeight={8}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={true}
+            >
               <View style={styles.editHeader}>
                 <Text style={styles.editTitle}>{formData.itemName || "Nome do Produto"}</Text>
-                <Text style={styles.editStatus}>Pendente</Text>
               </View>
               <Text style={styles.editLabel}>
                 <Text style={{ fontWeight: 'bold' }}>Quantidade:</Text> {formData.quantity || 1}
@@ -95,12 +107,22 @@ const FormModal = forwardRef((props, ref) => {
                   Excluir
                 </Button>
               </View>
-            </View>
+              <View style={styles.buttonGroup}>
+                <Button onPress={() => setVisible(false)}>Cancelar</Button>
+                <Button mode="contained" onPress={handleConfirm}>Confirmar</Button>
+              </View>
+            </KeyboardAwareScrollView>
             <View style={styles.editYellowBar} />
           </View>
         ) : (
           <View style={styles.justModalContainer}>
-            <View style={styles.justContent}>
+            <KeyboardAwareScrollView
+              contentContainerStyle={styles.justContent}
+              enableOnAndroid
+              extraScrollHeight={8}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
               <Text style={styles.justTitle}>Negar Produto</Text>
               <Text style={styles.justSubtitle}>Tem certeza de que quer negar este pedido?</Text>
               <Text style={styles.justLabel}>Justificativa:</Text>
@@ -130,14 +152,8 @@ const FormModal = forwardRef((props, ref) => {
                   Confirmar
                 </Button>
               </View>
-            </View>
+            </KeyboardAwareScrollView>
             <View style={styles.justRedBar} />
-          </View>
-        )}
-        {modalType === "editar" && (
-          <View style={styles.buttonGroup}>
-            <Button onPress={() => setVisible(false)}>Cancelar</Button>
-            <Button mode="contained" onPress={handleConfirm}>Confirmar</Button>
           </View>
         )}
       </Modal>
@@ -168,7 +184,7 @@ const styles = StyleSheet.create({
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 10, // se seu React Native não suporta `gap`, substitua por marginRight nos botões
+    gap: 10,
     marginTop: 20,
   },
   cancelButton: {
@@ -183,7 +199,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
   },
-  // --- Estilos para o modal de justificativa ---
+  // Modal de Justificativa
   justModalContainer: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -192,9 +208,9 @@ const styles = StyleSheet.create({
     minHeight: 380,
   },
   justContent: {
-    flex: 1,
     padding: 24,
     justifyContent: 'flex-start',
+    paddingBottom: 8, 
   },
   justRedBar: {
     width: 8,
@@ -246,18 +262,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     minWidth: 120,
   },
-  // --- Estilos para o modal de edição ---
+  // Modal de Edição  
   editModalContainer: {
-    flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 10,
     overflow: 'hidden',
     minHeight: 380,
   },
   editContent: {
-    flex: 1,
     padding: 24,
     justifyContent: 'flex-start',
+    paddingBottom: 8, 
   },
   editHeader: {
     flexDirection: 'row',
@@ -313,5 +328,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFEB3B',
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
 });
