@@ -134,7 +134,17 @@ const OrderCard = ({
           {currentStatus === "Pendente" && !isAdmin && (
             <BtnPadrao
               title={"Editar"}
-              onPress={() => console.log("Editar")}
+              onPress={() => negarModalRef.current?.showModal({
+                id,
+                itemName,
+                nomeSolicitante,
+                quantity,
+                orderDate,
+                productType,
+                category,
+                description,
+                justificativa,
+              }, "editar")}
               btnColor="#155DFC"
               style={styles.button}
             />
