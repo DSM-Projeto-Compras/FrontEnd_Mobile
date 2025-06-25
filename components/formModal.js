@@ -41,7 +41,7 @@ const FormModal = forwardRef((props, ref) => {
     borderRadius: 10,
     padding: 0,
     maxHeight: '80%', 
-    minHeight: 380,   
+    // minHeight: 380,   
     width: '92%',
     alignSelf: 'center',
     justifyContent: 'center',
@@ -53,6 +53,7 @@ const FormModal = forwardRef((props, ref) => {
       <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={containerStyle}>
         {modalType === "editar" ? (
           <View style={styles.editModalContainer}>
+            <View style={styles.editYellowBar} />
             <KeyboardAwareScrollView
               contentContainerStyle={styles.editContent}
               enableOnAndroid
@@ -68,8 +69,7 @@ const FormModal = forwardRef((props, ref) => {
               </Text>
               <Text style={styles.editLabel}>
                 <Text style={{ fontWeight: 'bold' }}>Data do Pedido:</Text> {formData.orderDate || "22/03/2025"}
-              </Text>
-
+              </Text>              
               <TextInput
                 style={styles.editInput}
                 placeholder="Quantidade"
@@ -77,45 +77,23 @@ const FormModal = forwardRef((props, ref) => {
                 onChangeText={(text) => handleChange("quantity", text)}
               />
               <TextInput
-                style={styles.editInput}
-                placeholder="Categoria"
-                value={formData.category}
-                onChangeText={(text) => handleChange("category", text)}
-              />
-              <TextInput
-                style={styles.editInput}
-                placeholder="Tipo"
-                value={formData.productType}
-                onChangeText={(text) => handleChange("productType", text)}
-              />
-              <TextInput
-                style={styles.editInput}
-                placeholder="Descrição"
+                style={styles.editInputLarge}
+                placeholder="Descriminação"
                 multiline
-                numberOfLines={2}
+                numberOfLines={4}
                 value={formData.description}
                 onChangeText={(text) => handleChange("description", text)}
               />
-
-              <View style={styles.editButtonGroup}>
-                <Button
-                  mode="contained"
-                  onPress={() => setVisible(false)}
-                  style={styles.editDeleteButton}
-                  labelStyle={{ color: '#fff' }}
-                >
-                  Excluir
-                </Button>
-              </View>
               <View style={styles.buttonGroup}>
-                <Button onPress={() => setVisible(false)}>Cancelar</Button>
+                <Button mode="contained" onPress={() => setVisible(false)} style={{backgroundColor: '#AE0F0A'}} labelStyle={{ color: '#fff' }}> Excluir </Button>
+                <Button mode="contained" onPress={() => setVisible(false)}>Cancelar</Button>
                 <Button mode="contained" onPress={handleConfirm}>Confirmar</Button>
               </View>
             </KeyboardAwareScrollView>
-            <View style={styles.editYellowBar} />
           </View>
         ) : (
           <View style={styles.justModalContainer}>
+            <View style={styles.justRedBar} />
             <KeyboardAwareScrollView
               contentContainerStyle={styles.justContent}
               enableOnAndroid
@@ -130,7 +108,7 @@ const FormModal = forwardRef((props, ref) => {
                 style={styles.justInput}
                 placeholder="Digite uma justificativa"
                 multiline
-                numberOfLines={4}
+                numberOfLines={5}
                 value={justification}
                 onChangeText={setJustification}
               />
@@ -153,7 +131,6 @@ const FormModal = forwardRef((props, ref) => {
                 </Button>
               </View>
             </KeyboardAwareScrollView>
-            <View style={styles.justRedBar} />
           </View>
         )}
       </Modal>
@@ -186,6 +163,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: 10,
     marginTop: 20,
+    marginBottom: 20,
   },
   cancelButton: {
     backgroundColor: '#B0B0B0',
@@ -199,13 +177,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
   },
-  // Modal de Justificativa
   justModalContainer: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 10,
     overflow: 'hidden',
-    minHeight: 380,
+    height: 340,
   },
   justContent: {
     padding: 24,
@@ -213,10 +190,8 @@ const styles = StyleSheet.create({
     paddingBottom: 8, 
   },
   justRedBar: {
-    width: 8,
-    backgroundColor: '#FF0000',
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
+    width: 6,
+    backgroundColor: '#F44336',
   },
   justTitle: {
     fontSize: 24,
@@ -252,22 +227,22 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   justCancelButton: {
-    backgroundColor: '#757575',
-    borderRadius: 5,
+    backgroundColor: '#155DFC',
+    borderRadius: 24,
     marginRight: 8,
     minWidth: 120,
   },
   justConfirmButton: {
-    backgroundColor: '#D32F2F',
-    borderRadius: 5,
+    backgroundColor: '#AE0F0A',
+    borderRadius: 24,
     minWidth: 120,
   },
-  // Modal de Edição  
   editModalContainer: {
     backgroundColor: '#fff',
     borderRadius: 10,
     overflow: 'hidden',
     minHeight: 380,
+    flexDirection: 'row',
   },
   editContent: {
     padding: 24,
@@ -294,7 +269,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#222',
     marginBottom: 2,
-  },
+  },  
   editInput: {
     borderWidth: 1,
     borderColor: '#E0E0E0',
@@ -305,6 +280,19 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 8,
     fontSize: 16,
+  },
+  editInputLarge: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    backgroundColor: '#F3EEF8',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginTop: 12,
+    marginBottom: 8,
+    fontSize: 16,
+    minHeight: 100,
+    textAlignVertical: 'top',
   },
   editButtonGroup: {
     flexDirection: 'row',
@@ -324,11 +312,8 @@ const styles = StyleSheet.create({
     minWidth: 120,
   },
   editYellowBar: {
-    width: 8,
+    width: 6,
     backgroundColor: '#FFEB3B',
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    position: 'absolute',
     right: 0,
     top: 0,
     bottom: 0,

@@ -93,15 +93,12 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   title: {
-    marginBottom: 32,
+    marginVertical: 20,
     textAlign: "center",
+    flex: 1,
   },
   formContainer: {
     padding: 16,
-  },
-  title: {
-    marginBottom: 32,
-    textAlign: "center",
   },
   input: {
     marginBottom: 16,
