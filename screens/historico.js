@@ -93,8 +93,9 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   title: {
-    marginBottom: 32,
+    marginVertical: 20,
     textAlign: "center",
+    flex: 1,
   },
   bottomNavContainer: {
     position: "absolute",

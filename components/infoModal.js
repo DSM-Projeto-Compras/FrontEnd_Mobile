@@ -89,16 +89,13 @@ const InfoModal = React.forwardRef((props, ref) => {
                     <Text style={styles.normalText}>{orderDate}</Text>
                   </Text>
                   <Text variant="bodyMedium" style={styles.boldText}>
-                    Status: <Text style={styles.normalText}>{status}</Text>
+                    Elemento de Despesa: <Text style={styles.normalText}>{productType}</Text>
                   </Text>
                   <Text variant="bodyMedium" style={styles.boldText}>
-                    Tipo: <Text style={styles.normalText}>{productType}</Text>
+                    Classe: <Text style={styles.normalText}>{category}</Text>
                   </Text>
                   <Text variant="bodyMedium" style={styles.boldText}>
-                    Categoria: <Text style={styles.normalText}>{category}</Text>
-                  </Text>
-                  <Text variant="bodyMedium" style={styles.boldText}>
-                    Descrição:{" "}
+                    Descriminação:{" "}
                     <Text style={styles.normalText}>{description}</Text>
                   </Text>
                 </>

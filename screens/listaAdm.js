@@ -58,8 +58,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    marginBottom: 32,
-    textAlign: 'center',
+    marginVertical: 20,
+    textAlign: "center",
+    flex: 1,
   },
   input: {
     marginBottom: 16,

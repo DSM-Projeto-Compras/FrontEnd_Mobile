@@ -260,7 +260,7 @@ const OrderScreen = () => {
             />
 
             <TextInput
-              label="Descrição"
+              label="Descriminação"
               style={styles.input}
               autoCapitalize="none"
               value={descricao}
