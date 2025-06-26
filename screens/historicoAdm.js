@@ -9,10 +9,21 @@ import { useAdmin } from "../contexts/AdminContext";
 
 const HistAdmScreen = () => {
   const modalRef = useRef();
-  const { allProducts, loading, error } = useAdmin();
+  const { allProducts, loading, error, approveProduct } = useAdmin();
 
   const abrirDetalhes = (itemData) => {
     modalRef.current?.showModal(itemData);
+  };
+
+  const handleStatusChange = async (id, status, justificativa = null) => {
+    try {
+      console.log("handleStatusChange chamado:", { id, status, justificativa });
+      await approveProduct(id, status, justificativa);
+      console.log("Status alterado com sucesso");
+    } catch (error) {
+      console.error("Erro ao atualizar status do produto:", error);
+      // Opcional: mostrar um alerta ou toast para o usuário
+    }
   };
 
   const sortedProducts = React.useMemo(() => {
@@ -55,6 +66,7 @@ const HistAdmScreen = () => {
           sortedProducts.map((product, index) => (
             <OrderCard
               key={product._id || product.id || `product-${index}`}
+              id={product._id || product.id}
               itemName={product.nome || product.name}
               quantity={product.quantidade || product.quantity || 1}
               orderDate={
@@ -71,6 +83,7 @@ const HistAdmScreen = () => {
               nomeSolicitante={product.userId?.nome || "Não informado"}
               justificativa={product.justificativa || ""}
               isAdmin={true}
+              onStatusChange={handleStatusChange}
               onVerDetalhes={abrirDetalhes}
             />
           ))}

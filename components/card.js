@@ -95,7 +95,7 @@ const OrderCard = ({
             <Text variant="titleMedium" style={styles.title}>
               {itemName}
             </Text>
-            {isAdmin ? (
+            {isAdmin && currentStatus === "Pendente" ? (
               <Menu
                 visible={menuVisible}
                 onDismiss={closeMenu}

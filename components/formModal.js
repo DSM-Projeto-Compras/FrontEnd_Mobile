@@ -36,8 +36,9 @@ const FormModal = forwardRef((props, ref) => {
         }
       }
 
-      if (modalType === "justificativa" && props.onSubmitJustification) {
-        props.onSubmitJustification(formData, justification);
+      if (modalType === "justificativa" && props.onSubmitJustificativa) {
+        console.log("Chamando onSubmitJustificativa com:", justification);
+        props.onSubmitJustificativa(justification);
       }
 
       setVisible(false);
@@ -163,7 +164,7 @@ const FormModal = forwardRef((props, ref) => {
               <Text style={styles.justLabel}>Justificativa:</Text>
               <TextInput
                 style={styles.justInput}
-                placeholder="Digite uma justificativa"
+                placeholder="Digite uma justificativa (opcional)"
                 multiline
                 numberOfLines={5}
                 value={justification}

@@ -49,6 +49,40 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
+  const approveProduct = async (id, status, justificativa = null) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const body = { status };
+      if (justificativa) {
+        body.justificativa = justificativa;
+      }
+
+      const response = await fetch(`${API_BASEURL}/products/aprove/${id}`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        console.log("Response:", response);
+        throw new Error("Erro ao processar aprovação do produto");
+      }
+
+      const data = await response.json();
+
+      await getAllProducts();
+
+      return data;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (userToken && isAdmin) {
       getAllProducts();
@@ -60,6 +94,7 @@ export const AdminProvider = ({ children }) => {
     loading,
     error,
     getAllProducts,
+    approveProduct,
     setError,
   };
 
