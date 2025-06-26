@@ -26,9 +26,7 @@ const HistAdmScreen = () => {
 
   const handleStatusChange = async (id, status, justificativa = null) => {
     try {
-      console.log("handleStatusChange chamado:", { id, status, justificativa });
       await approveProduct(id, status, justificativa);
-      console.log("Status alterado com sucesso");
     } catch (error) {
       console.error("Erro ao atualizar status do produto:", error);
     }

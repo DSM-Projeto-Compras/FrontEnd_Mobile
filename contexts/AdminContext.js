@@ -69,7 +69,6 @@ export const AdminProvider = ({ children }) => {
       });
 
       if (!response.ok) {
-        console.log("Response:", response);
         throw new Error("Erro ao processar aprovação do produto");
       }
 

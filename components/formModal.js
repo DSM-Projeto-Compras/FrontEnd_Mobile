@@ -37,7 +37,6 @@ const FormModal = forwardRef((props, ref) => {
       }
 
       if (modalType === "justificativa" && props.onSubmitJustificativa) {
-        console.log("Chamando onSubmitJustificativa com:", justification);
         props.onSubmitJustificativa(justification);
       }
 
