@@ -78,16 +78,15 @@ const RegisterAdmScreen = () => {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Text variant="headlineMedium" style={styles.title}>
-            Cadastre o novo administrador
-          </Text>
-
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#AE0F0A" />
             </View>
           ) : (
             <>
+              <Text variant="headlineMedium" style={styles.title}>
+                Cadastre o Novo Administrador
+              </Text>
               <TextInput
                 label="Nome"
                 value={nome}
@@ -168,6 +167,7 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: 32,
     textAlign: "center",
+    fontWeight: "bold",
   },
   input: {
     marginBottom: 16,
