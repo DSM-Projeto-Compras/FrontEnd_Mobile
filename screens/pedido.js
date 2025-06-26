@@ -11,6 +11,7 @@ import {
 import Header from "../components/header";
 import BottomNav from "../components/bottomNavigation";
 import BtnPadrao from "../components/button";
+import Toast from "../components/toast";
 import { useBECSearch } from "../contexts/BECContext";
 import { useProduct } from "../contexts/ProductContext";
 
@@ -24,17 +25,22 @@ const OrderScreen = () => {
     clearProducts,
   } = useBECSearch();
 
-  const { createProduct, loading: productLoading } = useProduct();
+  const {
+    createProduct,
+    loading: productLoading,
+    successMessage,
+    errorMessage,
+    clearSuccessMessage,
+    clearErrorMessage,
+  } = useProduct();
 
-  const [expanded, setExpanded] = useState(false);
   const [productName, setProductName] = useState("");
   const [quantidade, setQuantidade] = useState("");
   const [descricao, setDescricao] = useState("");
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [productInfo, setProductInfo] = useState(null);
   const [isSuggestionSelected, setIsSuggestionSelected] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [localErrorMessage, setLocalErrorMessage] = useState(null);
 
   useEffect(() => {
     clearProducts();
@@ -128,21 +134,20 @@ const OrderScreen = () => {
       }
     } catch (err) {
       console.error("Erro ao buscar detalhes do produto:", err);
-      setErrorMessage("Falha ao obter detalhes do produto");
+      setLocalErrorMessage("Falha ao obter detalhes do produto");
     }
   };
 
   const handleSubmit = async () => {
-    setSuccessMessage(null);
-    setErrorMessage(null);
+    setLocalErrorMessage(null);
 
     if (!isSuggestionSelected) {
-      setErrorMessage("Por favor, selecione uma sugestão de produto.");
+      setLocalErrorMessage("Por favor, selecione uma sugestão de produto.");
       return;
     }
 
     if (!productName || !quantidade) {
-      setErrorMessage("Preencha todos os campos obrigatórios.");
+      setLocalErrorMessage("Preencha todos os campos obrigatórios.");
       return;
     }
 
@@ -173,8 +178,6 @@ const OrderScreen = () => {
 
       await createProduct(productData);
 
-      setSuccessMessage("Produto solicitado com sucesso!");
-
       setProductName("");
       setQuantidade("");
       setDescricao("");
@@ -183,10 +186,19 @@ const OrderScreen = () => {
       clearProducts();
     } catch (error) {
       console.error("Erro ao criar produto:", error);
-      setErrorMessage(
+      setLocalErrorMessage(
         error.message || "Erro ao solicitar produto. Tente novamente."
       );
     }
+  };
+
+  const handleDismissLocalError = () => {
+    setLocalErrorMessage(null);
+  };
+
+  const handleQuantidadeChange = (text) => {
+    const numericValue = text.replace(/[^0-9]/g, "");
+    setQuantidade(numericValue);
   };
 
   return (
@@ -256,7 +268,7 @@ const OrderScreen = () => {
               style={styles.input}
               keyboardType="numeric"
               value={quantidade}
-              onChangeText={setQuantidade}
+              onChangeText={handleQuantidadeChange}
             />
 
             <TextInput
@@ -277,24 +289,21 @@ const OrderScreen = () => {
               onPress={handleSubmit}
               disabled={productLoading}
             />
-
-            {errorMessage && (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{errorMessage}</Text>
-              </View>
-            )}
-
-            {successMessage && (
-              <View style={styles.successContainer}>
-                <Text style={styles.successText}>{successMessage}</Text>
-              </View>
-            )}
           </View>
         </View>
       </KeyboardAvoidingView>
       <View style={styles.bottomNavContainer}>
         <BottomNav />
       </View>
+
+      <Toast
+        successMessage={successMessage}
+        errorMessage={errorMessage || localErrorMessage}
+        onDismissSuccess={clearSuccessMessage}
+        onDismissError={
+          errorMessage ? clearErrorMessage : handleDismissLocalError
+        }
+      />
     </SafeAreaView>
   );
 };
@@ -372,28 +381,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 8,
     fontStyle: "italic",
-  },
-  errorContainer: {
-    backgroundColor: "#ffebee",
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 16,
-    borderWidth: 1,
-    borderColor: "#ffcdd2",
-  },
-  errorText: {
-    color: "#c62828",
-  },
-  successContainer: {
-    backgroundColor: "#e8f5e9",
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 16,
-    borderWidth: 1,
-    borderColor: "#c8e6c9",
-  },
-  successText: {
-    color: "#2e7d32",
   },
   bottomNavContainer: {
     position: "absolute",

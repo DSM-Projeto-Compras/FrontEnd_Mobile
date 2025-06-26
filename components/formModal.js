@@ -7,6 +7,7 @@ import { useProduct } from "../contexts/ProductContext";
 const FormModal = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false);
   const [modalType, setModalType] = useState("editar");
+  const [originalData, setOriginalData] = useState({});
   const [formData, setFormData] = useState({});
   const [justification, setJustification] = useState("justificativa");
 
@@ -14,6 +15,7 @@ const FormModal = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     showModal: (data, type = "editar") => {
+      setOriginalData(data);
       setFormData(data);
       setModalType(type);
       setJustification(data.justificativa || "");
@@ -59,7 +61,12 @@ const FormModal = forwardRef((props, ref) => {
   };
 
   const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === "quantity") {
+      const numericValue = value.replace(/[^0-9]/g, "");
+      setFormData((prev) => ({ ...prev, [field]: numericValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    }
   };
 
   const containerStyle = {
@@ -94,22 +101,23 @@ const FormModal = forwardRef((props, ref) => {
             >
               <View style={styles.editHeader}>
                 <Text style={styles.editTitle}>
-                  {formData.itemName || "Nome do Produto"}
+                  {originalData.itemName || "Nome do Produto"}
                 </Text>
               </View>
               <Text style={styles.editLabel}>
                 <Text style={{ fontWeight: "bold" }}>Quantidade:</Text>{" "}
-                {formData.quantity || 1}
+                {originalData.quantity || 1}
               </Text>
               <Text style={styles.editLabel}>
                 <Text style={{ fontWeight: "bold" }}>Data do Pedido:</Text>{" "}
-                {formData.orderDate || "22/03/2025"}
+                {originalData.orderDate || "22/03/2025"}
               </Text>
               <TextInput
                 style={styles.editInput}
                 placeholder="Quantidade"
-                value={String(formData.quantity)}
+                value={String(formData.quantity || "")}
                 onChangeText={(text) => handleChange("quantity", text)}
+                keyboardType="numeric"
               />
               <TextInput
                 style={styles.editInputLarge}

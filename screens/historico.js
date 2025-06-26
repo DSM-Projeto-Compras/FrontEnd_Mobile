@@ -5,11 +5,21 @@ import Header from "../components/header";
 import BottomNav from "../components/bottomNavigation";
 import OrderCard from "../components/card";
 import InfoModal from "../components/infoModal";
+import Toast from "../components/toast";
 import { useProduct } from "../contexts/ProductContext";
 
 const HistScreen = () => {
   const modalRef = useRef();
-  const { products, loading, error, getProducts } = useProduct();
+  const {
+    products,
+    loading,
+    error,
+    getProducts,
+    successMessage,
+    errorMessage,
+    clearSuccessMessage,
+    clearErrorMessage,
+  } = useProduct();
 
   const abrirDetalhes = (itemData) => {
     modalRef.current?.showModal(itemData);
@@ -92,6 +102,13 @@ const HistScreen = () => {
       <View style={styles.bottomNavContainer}>
         <BottomNav />
       </View>
+
+      <Toast
+        successMessage={successMessage}
+        errorMessage={errorMessage}
+        onDismissSuccess={clearSuccessMessage}
+        onDismissError={clearErrorMessage}
+      />
     </View>
   );
 };

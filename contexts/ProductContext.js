@@ -16,6 +16,8 @@ export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const { userToken } = useAuth();
 
   const getAuthHeaders = () => {
@@ -101,6 +103,7 @@ export const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+      setErrorMessage(null);
 
       const backendData = {
         _id: id,
@@ -132,9 +135,11 @@ export const ProductProvider = ({ children }) => {
           product._id === id || product.id === id ? updatedProduct : product
         )
       );
+      setSuccessMessage("Produto atualizado com sucesso!");
       return updatedProduct;
     } catch (err) {
       setError(err.message);
+      setErrorMessage("Erro ao atualizar produto. Tente novamente.");
       throw err;
     } finally {
       setLoading(false);
@@ -145,24 +150,38 @@ export const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+      setErrorMessage(null);
+
       const response = await fetch(`${API_BASEURL}/products/${id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Erro ao deletar produto: ${errorText}`);
       }
+
       setProducts((prev) =>
         prev.filter((product) => product._id !== id && product.id !== id)
       );
+      setSuccessMessage("Produto excluído com sucesso!");
       return true;
     } catch (err) {
       setError(err.message);
+      setErrorMessage("Erro ao excluir produto. Tente novamente.");
       throw err;
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearSuccessMessage = () => {
+    setSuccessMessage(null);
+  };
+
+  const clearErrorMessage = () => {
+    setErrorMessage(null);
   };
 
   useEffect(() => {
@@ -175,12 +194,16 @@ export const ProductProvider = ({ children }) => {
     products,
     loading,
     error,
+    successMessage,
+    errorMessage,
     getProducts,
     getProductById,
     createProduct,
     updateProduct,
     deleteProduct,
     setError,
+    clearSuccessMessage,
+    clearErrorMessage,
   };
 
   return (

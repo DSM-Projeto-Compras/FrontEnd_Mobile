@@ -8,6 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const apiUrl = API_BASEURL + "/logins";
 
   const login = async (email, senha) => {
@@ -37,11 +39,14 @@ export const AuthProvider = ({ children }) => {
         const adminStatus = data.cargo === "admin";
         await SecureStore.setItemAsync("isAdmin", adminStatus.toString());
         setIsAdmin(adminStatus);
+
+        setSuccessMessage("Login realizado com sucesso!");
       } else {
         throw new Error("Token não encontrado na resposta");
       }
     } catch (error) {
       console.error("Erro no login:", error);
+      setErrorMessage("Erro ao fazer login. Verifique suas credenciais.");
       throw error;
     }
   };
@@ -55,6 +60,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (response.status === 201) {
+        setSuccessMessage("Cadastro realizado com sucesso!");
         return { success: true };
       }
 
@@ -71,6 +77,7 @@ export const AuthProvider = ({ children }) => {
       throw new Error(data.message || "Erro no cadastro");
     } catch (error) {
       console.error("Erro no cadastro:", error);
+      setErrorMessage("Erro ao realizar cadastro. Tente novamente.");
       throw error;
     }
   };
@@ -94,12 +101,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (response.ok) {
+        setSuccessMessage("Email de recuperação enviado com sucesso!");
         return { success: true, message: data.message };
       } else {
         throw new Error(data.message || "Erro ao enviar email de recuperação");
       }
     } catch (error) {
       console.error("Erro ao solicitar recuperação de senha:", error);
+      setErrorMessage("Erro ao enviar email de recuperação.");
       throw error;
     }
   };
@@ -123,12 +132,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (response.ok) {
+        setSuccessMessage("Código verificado com sucesso!");
         return { success: true, message: data.message };
       } else {
         throw new Error(data.message || "Código de verificação inválido");
       }
     } catch (error) {
       console.error("Erro ao verificar código:", error);
+      setErrorMessage("Código de verificação inválido.");
       throw error;
     }
   };
@@ -152,12 +163,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (response.ok) {
+        setSuccessMessage("Senha redefinida com sucesso!");
         return { success: true, message: data.message };
       } else {
         throw new Error(data.message || "Erro ao redefinir senha");
       }
     } catch (error) {
       console.error("Erro ao redefinir senha:", error);
+      setErrorMessage("Erro ao redefinir senha.");
       throw error;
     }
   };
@@ -167,6 +180,15 @@ export const AuthProvider = ({ children }) => {
     await SecureStore.deleteItemAsync("isAdmin");
     setUserToken(null);
     setIsAdmin(false);
+    setSuccessMessage("Logout realizado com sucesso!");
+  };
+
+  const clearSuccessMessage = () => {
+    setSuccessMessage(null);
+  };
+
+  const clearErrorMessage = () => {
+    setErrorMessage(null);
   };
 
   const loadToken = async () => {
@@ -193,6 +215,10 @@ export const AuthProvider = ({ children }) => {
         forgotPassword,
         verifyCode,
         resetPassword,
+        successMessage,
+        errorMessage,
+        clearSuccessMessage,
+        clearErrorMessage,
       }}
     >
       {children}
