@@ -1,15 +1,19 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text, ActivityIndicator } from "react-native-paper";
+import { Text, ActivityIndicator, IconButton } from "react-native-paper";
 import Header from "../components/header";
 import OrderCard from "../components/card";
 import InfoModal from "../components/infoModal";
+import FilterModal from "../components/FilterModal";
 import BottomNavAdm from "../components/bottomNavAdm";
 import Toast from "../components/toast";
 import { useAdmin } from "../contexts/AdminContext";
 
 const HistAdmScreen = () => {
   const modalRef = useRef();
+  const filterModalRef = useRef();
+  const [filters, setFilters] = useState({ status: [], type: [] });
+
   const {
     allProducts,
     loading,
@@ -32,21 +36,81 @@ const HistAdmScreen = () => {
     }
   };
 
-  const sortedProducts = React.useMemo(() => {
-    return [...allProducts].sort((a, b) => {
+  const handleApplyFilters = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const handleClearFilters = () => {
+    setFilters({ status: [], type: [] });
+  };
+
+  const handleOpenFilter = () => {
+    filterModalRef.current?.show();
+  };
+
+  const filteredAndSortedProducts = useMemo(() => {
+    let filtered = [...allProducts];
+
+    if (filters.name && filters.name.length > 0) {
+      filtered = filtered.filter((product) =>
+        (product.nome || product.name || "")
+          .toLowerCase()
+          .includes(filters.name.toLowerCase())
+      );
+    }
+
+    if (filters.requesterName && filters.requesterName.length > 0) {
+      filtered = filtered.filter((product) =>
+        (product.userId?.nome || "")
+          .toLowerCase()
+          .includes(filters.requesterName.toLowerCase())
+      );
+    }
+
+    if (filters.status.length > 0) {
+      filtered = filtered.filter((product) =>
+        filters.status.includes(product.status || "Pendente")
+      );
+    }
+
+    if (filters.type.length > 0) {
+      filtered = filtered.filter((product) =>
+        filters.type.includes(product.tipo || "material-de-consumo")
+      );
+    }
+
+    return filtered.sort((a, b) => {
       const dateA = new Date(a.data || a.orderDate || 0);
       const dateB = new Date(b.data || b.orderDate || 0);
       return dateB - dateA;
     });
-  }, [allProducts]);
+  }, [allProducts, filters]);
+
+  const hasActiveFilters =
+    filters.status.length > 0 ||
+    filters.type.length > 0 ||
+    (filters.name && filters.name.length > 0) ||
+    (filters.requesterName && filters.requesterName.length > 0);
 
   return (
     <View style={styles.pageContainer}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Header />
+
         <Text variant="headlineMedium" style={styles.title}>
           Histórico
         </Text>
+
+        <IconButton
+          icon="filter-variant"
+          size={28}
+          iconColor={hasActiveFilters ? "#AE0F0A" : "#666"}
+          style={[
+            styles.filterButton,
+            hasActiveFilters && styles.filterButtonActive,
+          ]}
+          onPress={handleOpenFilter}
+        />
 
         {loading && (
           <View style={styles.centerContainer}>
@@ -54,14 +118,18 @@ const HistAdmScreen = () => {
           </View>
         )}
 
-        {!loading && allProducts.length === 0 && (
+        {!loading && filteredAndSortedProducts.length === 0 && (
           <View style={styles.centerContainer}>
-            <Text style={styles.emptyText}>Nenhum produto encontrado</Text>
+            <Text style={styles.emptyText}>
+              {hasActiveFilters
+                ? "Nenhum produto encontrado com os filtros aplicados"
+                : "Nenhum produto encontrado"}
+            </Text>
           </View>
         )}
 
         {!loading &&
-          sortedProducts.map((product, index) => (
+          filteredAndSortedProducts.map((product, index) => (
             <OrderCard
               key={product._id || product.id || `product-${index}`}
               id={product._id || product.id}
@@ -88,6 +156,12 @@ const HistAdmScreen = () => {
       </ScrollView>
 
       <InfoModal ref={modalRef} />
+      <FilterModal
+        ref={filterModalRef}
+        isAdmin={true}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
+      />
 
       <Toast
         successMessage={successMessage}
@@ -110,11 +184,28 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 80,
   },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 20,
+    paddingHorizontal: 16,
+  },
   title: {
     marginVertical: 20,
     textAlign: "center",
-    flex: 1,
     fontWeight: "bold",
+  },
+  filterButton: {
+    position: "absolute",
+    top: 105,
+    right: 16,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 20,
+    zIndex: 1,
+  },
+  filterButtonActive: {
+    backgroundColor: "#ffebee",
   },
   formContainer: {
     padding: 16,
