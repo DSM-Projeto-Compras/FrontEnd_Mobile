@@ -51,24 +51,16 @@ const HistAdmScreen = () => {
         {loading && (
           <View style={styles.centerContainer}>
             <ActivityIndicator size="large" />
-            <Text style={styles.loadingText}>Carregando produtos...</Text>
           </View>
         )}
 
-        {error && (
-          <View style={styles.centerContainer}>
-            <Text style={styles.errorText}>Erro: {error}</Text>
-          </View>
-        )}
-
-        {!loading && !error && allProducts.length === 0 && (
+        {!loading && allProducts.length === 0 && (
           <View style={styles.centerContainer}>
             <Text style={styles.emptyText}>Nenhum produto encontrado</Text>
           </View>
         )}
 
         {!loading &&
-          !error &&
           sortedProducts.map((product, index) => (
             <OrderCard
               key={product._id || product.id || `product-${index}`}
@@ -139,14 +131,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-  },
-  loadingText: {
-    marginTop: 10,
-    textAlign: "center",
-  },
-  errorText: {
-    color: "red",
-    textAlign: "center",
   },
   emptyText: {
     textAlign: "center",

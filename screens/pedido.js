@@ -239,8 +239,6 @@ const OrderScreen = () => {
               )}
             </View>
 
-            {isLoading && <Text style={styles.loadingText}>Carregando...</Text>}
-
             {productInfo && (
               <Surface style={styles.productInfo}>
                 <Text style={styles.infoTitle}>Informações do produto</Text>
@@ -376,11 +374,6 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontWeight: "bold",
-  },
-  loadingText: {
-    textAlign: "center",
-    marginVertical: 8,
-    fontStyle: "italic",
   },
   bottomNavContainer: {
     position: "absolute",

@@ -7,7 +7,7 @@ const Toast = ({
   errorMessage,
   onDismissSuccess,
   onDismissError,
-  duration = 4000,
+  duration = 2000,
   login = false,
 }) => {
   return (

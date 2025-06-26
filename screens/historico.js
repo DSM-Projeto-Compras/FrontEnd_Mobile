@@ -51,8 +51,7 @@ const HistScreen = () => {
 
         {loading && (
           <View style={styles.centerContainer}>
-            <ActivityIndicator size="large" />
-            <Text style={styles.loadingText}>Carregando produtos...</Text>
+            <ActivityIndicator size="large" color="#AE0F0A" />
           </View>
         )}
 
@@ -135,10 +134,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-  },
-  loadingText: {
-    marginTop: 10,
-    textAlign: "center",
   },
   errorText: {
     color: "red",

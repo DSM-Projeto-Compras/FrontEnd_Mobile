@@ -82,6 +82,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const registerAdmin = async (nome, email, senha) => {
+    try {
+      const response = await fetch(`${apiUrl}/cadastro-admin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "access-token": userToken,
+        },
+        body: JSON.stringify({ nome, email, senha }),
+      });
+
+      if (response.status === 201) {
+        setSuccessMessage("Administrador cadastrado com sucesso!");
+        return { success: true };
+      }
+
+      const contentType = response.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(`Erro no servidor: ${response.status} - ${text}`);
+      }
+
+      throw new Error(data.message || "Erro no cadastro do administrador");
+    } catch (error) {
+      console.error("Erro no cadastro do administrador:", error);
+      setErrorMessage("Erro ao cadastrar administrador. Tente novamente.");
+      throw error;
+    }
+  };
+
   const forgotPassword = async (email) => {
     try {
       const response = await fetch(`${apiUrl}/forgot`, {
@@ -191,6 +225,10 @@ export const AuthProvider = ({ children }) => {
     setErrorMessage(null);
   };
 
+  const setErrorMessageExternal = (message) => {
+    setErrorMessage(message);
+  };
+
   const loadToken = async () => {
     const token = await SecureStore.getItemAsync("userToken");
     const adminStatus = await SecureStore.getItemAsync("isAdmin");
@@ -210,6 +248,7 @@ export const AuthProvider = ({ children }) => {
         isAdmin,
         login,
         register,
+        registerAdmin,
         logout,
         isLoading,
         forgotPassword,
@@ -219,6 +258,7 @@ export const AuthProvider = ({ children }) => {
         errorMessage,
         clearSuccessMessage,
         clearErrorMessage,
+        setErrorMessage: setErrorMessageExternal,
       }}
     >
       {children}

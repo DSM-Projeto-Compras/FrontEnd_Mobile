@@ -211,7 +211,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10,
     borderRadius: 8,
-    overflow: "hidden",
   },
   statusStrip: {
     width: 6,
