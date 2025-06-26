@@ -261,12 +261,13 @@ const OrderScreen = () => {
 
             <TextInput
               label="Descriminação"
-              style={styles.input}
+              style={[styles.input, styles.textAreaInput]}
               autoCapitalize="none"
               value={descricao}
               onChangeText={setDescricao}
               multiline
-              numberOfLines={3}
+              numberOfLines={6}
+              textAlignVertical="top"
             />
 
             <BtnPadrao
@@ -318,6 +319,9 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
+  },
+  textAreaInput: {
+    minHeight: 120,
   },
   inputContainer: {
     position: "relative",
