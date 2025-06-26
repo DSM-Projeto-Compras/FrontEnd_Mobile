@@ -76,6 +76,7 @@ export const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+      setErrorMessage(null);
 
       const response = await fetch(`${API_BASEURL}/products`, {
         method: "POST",
@@ -90,9 +91,11 @@ export const ProductProvider = ({ children }) => {
 
       const newProduct = await response.json();
       setProducts((prev) => [...prev, newProduct]);
+      setSuccessMessage("Requisição criada com sucesso!");
       return newProduct;
     } catch (err) {
       setError(err.message);
+      setErrorMessage("Erro ao criar requisição. Tente novamente.");
       throw err;
     } finally {
       setLoading(false);
@@ -126,7 +129,7 @@ export const ProductProvider = ({ children }) => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Erro ao atualizar produto: ${errorText}`);
+        throw new Error(`Erro ao atualizar requisição: ${errorText}`);
       }
 
       const updatedProduct = await response.json();
@@ -135,11 +138,11 @@ export const ProductProvider = ({ children }) => {
           product._id === id || product.id === id ? updatedProduct : product
         )
       );
-      setSuccessMessage("Produto atualizado com sucesso!");
+      setSuccessMessage("Rrequisição atualizada com sucesso!");
       return updatedProduct;
     } catch (err) {
       setError(err.message);
-      setErrorMessage("Erro ao atualizar produto. Tente novamente.");
+      setErrorMessage("Erro ao atualizar requisição. Tente novamente.");
       throw err;
     } finally {
       setLoading(false);
@@ -159,17 +162,17 @@ export const ProductProvider = ({ children }) => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Erro ao deletar produto: ${errorText}`);
+        throw new Error(`Erro ao deletar requisição: ${errorText}`);
       }
 
       setProducts((prev) =>
         prev.filter((product) => product._id !== id && product.id !== id)
       );
-      setSuccessMessage("Produto excluído com sucesso!");
+      setSuccessMessage("Requisição excluída com sucesso!");
       return true;
     } catch (err) {
       setError(err.message);
-      setErrorMessage("Erro ao excluir produto. Tente novamente.");
+      setErrorMessage("Erro ao excluir requisição. Tente novamente.");
       throw err;
     } finally {
       setLoading(false);

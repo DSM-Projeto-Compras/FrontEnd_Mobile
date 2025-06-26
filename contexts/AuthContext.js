@@ -214,7 +214,6 @@ export const AuthProvider = ({ children }) => {
     await SecureStore.deleteItemAsync("isAdmin");
     setUserToken(null);
     setIsAdmin(false);
-    setSuccessMessage("Logout realizado com sucesso!");
   };
 
   const clearSuccessMessage = () => {
