@@ -17,6 +17,8 @@ const OrderCard = ({
   isAdmin = true,
   justificativa = "",
   onStatusChange = () => {},
+  onProductUpdated = () => {},
+  onProductDeleted = () => {},
   id,
 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -24,7 +26,6 @@ const OrderCard = ({
 
   const modalRef = useRef();
   const negarModalRef = useRef();
-
 
   const getStatusColor = (statusValue = currentStatus) => {
     switch (statusValue) {
@@ -49,19 +50,19 @@ const OrderCard = ({
     closeMenu();
 
     if (newStatus === "Negado") {
-      negarModalRef.current?.showModal({
-        id,
-        itemName,
-        nomeSolicitante,
-        quantity,
-        orderDate,
-        productType,
-        category,
-        description,
-      },
-      "justificativa"
-    
-    );
+      negarModalRef.current?.showModal(
+        {
+          id,
+          itemName,
+          nomeSolicitante,
+          quantity,
+          orderDate,
+          productType,
+          category,
+          description,
+        },
+        "justificativa"
+      );
     } else {
       setCurrentStatus(newStatus);
       onStatusChange(id, newStatus);
@@ -91,8 +92,10 @@ const OrderCard = ({
       <Card style={styles.card}>
         <Card.Content>
           <View style={styles.header}>
-            <Text variant="titleMedium" style={styles.title}>{itemName}</Text>
-            {isAdmin ? (
+            <Text variant="titleMedium" style={styles.title}>
+              {itemName}
+            </Text>
+            {isAdmin && currentStatus === "Pendente" ? (
               <Menu
                 visible={menuVisible}
                 onDismiss={closeMenu}
@@ -105,20 +108,32 @@ const OrderCard = ({
                   </Text>
                 }
               >
-                <Menu.Item onPress={() => handleStatusSelect("Pendente")} title="Pendente" />
+                <Menu.Item
+                  onPress={() => handleStatusSelect("Pendente")}
+                  title="Pendente"
+                />
                 <Divider />
-                <Menu.Item onPress={() => handleStatusSelect("Aprovado")} title="Aprovado" />
+                <Menu.Item
+                  onPress={() => handleStatusSelect("Aprovado")}
+                  title="Aprovado"
+                />
                 <Divider />
-                <Menu.Item onPress={() => handleStatusSelect("Negado")} title="Negado" />
+                <Menu.Item
+                  onPress={() => handleStatusSelect("Negado")}
+                  title="Negado"
+                />
               </Menu>
             ) : (
-              <Text variant="titleMedium" style={styles.statusText}>{currentStatus}</Text>
+              <Text variant="titleMedium" style={styles.statusText}>
+                {currentStatus}
+              </Text>
             )}
           </View>
 
           {isAdmin && nomeSolicitante && (
             <Text variant="bodyMedium" style={styles.boldText}>
-              Solicitante: <Text style={styles.normalText}>{nomeSolicitante}</Text>
+              Solicitante:{" "}
+              <Text style={styles.normalText}>{nomeSolicitante}</Text>
             </Text>
           )}
 
@@ -134,23 +149,28 @@ const OrderCard = ({
           {currentStatus === "Pendente" && !isAdmin && (
             <BtnPadrao
               title={"Editar"}
-              onPress={() => negarModalRef.current?.showModal({
-                id,
-                itemName,
-                nomeSolicitante,
-                quantity,
-                orderDate,
-                productType,
-                category,
-                description,
-                justificativa,
-              }, "editar")}
+              onPress={() =>
+                negarModalRef.current?.showModal(
+                  {
+                    id,
+                    itemName,
+                    nomeSolicitante,
+                    quantity,
+                    orderDate,
+                    productType,
+                    category,
+                    description,
+                    justificativa,
+                  },
+                  "editar"
+                )
+              }
               btnColor="#155DFC"
               style={styles.button}
             />
           )}
           {currentStatus === "Negado" && (
-             <BtnPadrao
+            <BtnPadrao
               title={"Ver Justificativa"}
               onPress={() => openModal("justificativa")}
               btnColor="#155DFC"
@@ -165,14 +185,21 @@ const OrderCard = ({
           />
         </Card.Actions>
       </Card>
-      <View style={[styles.statusStrip, { backgroundColor: getStatusColor(currentStatus) }]} />
+      <View
+        style={[
+          styles.statusStrip,
+          { backgroundColor: getStatusColor(currentStatus) },
+        ]}
+      />
       <InfoModal ref={modalRef} />
       <FormModal
         ref={negarModalRef}
         onSubmitJustificativa={(justificativa) => {
           setCurrentStatus("Negado");
-          onStatusChange(id, "Negado", justificativa); // envia a justificativa
+          onStatusChange(id, "Negado", justificativa);
         }}
+        onProductUpdated={onProductUpdated}
+        onProductDeleted={onProductDeleted}
       />
     </View>
   );
@@ -184,7 +211,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10,
     borderRadius: 8,
-    overflow: "hidden",
   },
   statusStrip: {
     width: 6,

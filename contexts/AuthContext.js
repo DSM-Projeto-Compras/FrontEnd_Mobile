@@ -8,6 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const apiUrl = API_BASEURL + "/logins";
 
   const login = async (email, senha) => {
@@ -37,11 +39,14 @@ export const AuthProvider = ({ children }) => {
         const adminStatus = data.cargo === "admin";
         await SecureStore.setItemAsync("isAdmin", adminStatus.toString());
         setIsAdmin(adminStatus);
+
+        setSuccessMessage("Login realizado com sucesso!");
       } else {
         throw new Error("Token não encontrado na resposta");
       }
     } catch (error) {
       console.error("Erro no login:", error);
+      setErrorMessage("Erro ao fazer login. Verifique suas credenciais.");
       throw error;
     }
   };
@@ -55,6 +60,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (response.status === 201) {
+        setSuccessMessage("Cadastro realizado com sucesso!");
         return { success: true };
       }
 
@@ -71,6 +77,41 @@ export const AuthProvider = ({ children }) => {
       throw new Error(data.message || "Erro no cadastro");
     } catch (error) {
       console.error("Erro no cadastro:", error);
+      setErrorMessage("Erro ao realizar cadastro. Tente novamente.");
+      throw error;
+    }
+  };
+
+  const registerAdmin = async (nome, email, senha) => {
+    try {
+      const response = await fetch(`${apiUrl}/cadastro-admin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "access-token": userToken,
+        },
+        body: JSON.stringify({ nome, email, senha }),
+      });
+
+      if (response.status === 201) {
+        setSuccessMessage("Administrador cadastrado com sucesso!");
+        return { success: true };
+      }
+
+      const contentType = response.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(`Erro no servidor: ${response.status} - ${text}`);
+      }
+
+      throw new Error(data.message || "Erro no cadastro do administrador");
+    } catch (error) {
+      console.error("Erro no cadastro do administrador:", error);
+      setErrorMessage("Erro ao cadastrar administrador. Tente novamente.");
       throw error;
     }
   };
@@ -94,12 +135,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (response.ok) {
+        setSuccessMessage("Email de recuperação enviado com sucesso!");
         return { success: true, message: data.message };
       } else {
         throw new Error(data.message || "Erro ao enviar email de recuperação");
       }
     } catch (error) {
       console.error("Erro ao solicitar recuperação de senha:", error);
+      setErrorMessage("Erro ao enviar email de recuperação.");
       throw error;
     }
   };
@@ -123,12 +166,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (response.ok) {
+        setSuccessMessage("Código verificado com sucesso!");
         return { success: true, message: data.message };
       } else {
         throw new Error(data.message || "Código de verificação inválido");
       }
     } catch (error) {
       console.error("Erro ao verificar código:", error);
+      setErrorMessage("Código de verificação inválido.");
       throw error;
     }
   };
@@ -152,12 +197,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (response.ok) {
+        setSuccessMessage("Senha redefinida com sucesso!");
         return { success: true, message: data.message };
       } else {
         throw new Error(data.message || "Erro ao redefinir senha");
       }
     } catch (error) {
       console.error("Erro ao redefinir senha:", error);
+      setErrorMessage("Erro ao redefinir senha.");
       throw error;
     }
   };
@@ -167,6 +214,18 @@ export const AuthProvider = ({ children }) => {
     await SecureStore.deleteItemAsync("isAdmin");
     setUserToken(null);
     setIsAdmin(false);
+  };
+
+  const clearSuccessMessage = () => {
+    setSuccessMessage(null);
+  };
+
+  const clearErrorMessage = () => {
+    setErrorMessage(null);
+  };
+
+  const setErrorMessageExternal = (message) => {
+    setErrorMessage(message);
   };
 
   const loadToken = async () => {
@@ -188,11 +247,17 @@ export const AuthProvider = ({ children }) => {
         isAdmin,
         login,
         register,
+        registerAdmin,
         logout,
         isLoading,
         forgotPassword,
         verifyCode,
         resetPassword,
+        successMessage,
+        errorMessage,
+        clearSuccessMessage,
+        clearErrorMessage,
+        setErrorMessage: setErrorMessageExternal,
       }}
     >
       {children}

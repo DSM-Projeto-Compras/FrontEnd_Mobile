@@ -1,16 +1,21 @@
-import React, { useImperativeHandle, useState, forwardRef } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
-import { Modal, Portal, Text, Button } from 'react-native-paper';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import React, { useImperativeHandle, useState, forwardRef } from "react";
+import { View, StyleSheet, TextInput } from "react-native";
+import { Modal, Portal, Text, Button } from "react-native-paper";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useProduct } from "../contexts/ProductContext";
 
 const FormModal = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false);
   const [modalType, setModalType] = useState("editar");
+  const [originalData, setOriginalData] = useState({});
   const [formData, setFormData] = useState({});
   const [justification, setJustification] = useState("justificativa");
 
+  const { updateProduct, deleteProduct } = useProduct();
+
   useImperativeHandle(ref, () => ({
     showModal: (data, type = "editar") => {
+      setOriginalData(data);
       setFormData(data);
       setModalType(type);
       setJustification(data.justificativa || "");
@@ -19,38 +24,71 @@ const FormModal = forwardRef((props, ref) => {
     hideModal: () => setVisible(false),
   }));
 
-  const handleConfirm = () => {
-    if (modalType === "editar" && props.onSubmitEdit) {
-      props.onSubmitEdit(formData);
-    }
+  const handleConfirm = async () => {
+    try {
+      if (modalType === "editar" && formData.id) {
+        const updatedProduct = await updateProduct(formData.id, formData);
+        if (props.onSubmitEdit) {
+          props.onSubmitEdit(updatedProduct);
+        }
+        if (props.onProductUpdated) {
+          props.onProductUpdated(updatedProduct);
+        }
+      }
 
-    if (modalType === "justificativa" && props.onSubmitJustification) {
-      props.onSubmitJustification(formData, justification);
-    }
+      if (modalType === "justificativa" && props.onSubmitJustificativa) {
+        props.onSubmitJustificativa(justification);
+      }
 
-    setVisible(false);
+      setVisible(false);
+    } catch (error) {
+      console.error("Erro ao confirmar:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (formData.id) {
+        await deleteProduct(formData.id);
+        if (props.onProductDeleted) {
+          props.onProductDeleted(formData.id);
+        }
+        setVisible(false);
+      }
+    } catch (error) {
+      console.error("Erro ao deletar produto:", error);
+    }
   };
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === "quantity") {
+      const numericValue = value.replace(/[^0-9]/g, "");
+      setFormData((prev) => ({ ...prev, [field]: numericValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    }
   };
 
   const containerStyle = {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginHorizontal: 20,
     borderRadius: 10,
     padding: 0,
-    maxHeight: '80%', 
-    // minHeight: 380,   
-    width: '92%',
-    alignSelf: 'center',
-    justifyContent: 'center',
+    maxHeight: "80%",
+    // minHeight: 380,
+    width: "92%",
+    alignSelf: "center",
+    justifyContent: "center",
     // paddingVertical: 16,
   };
 
   return (
     <Portal>
-      <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={containerStyle}>
+      <Modal
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        contentContainerStyle={containerStyle}
+      >
         {modalType === "editar" ? (
           <View style={styles.editModalContainer}>
             <View style={styles.editYellowBar} />
@@ -62,19 +100,24 @@ const FormModal = forwardRef((props, ref) => {
               showsVerticalScrollIndicator={true}
             >
               <View style={styles.editHeader}>
-                <Text style={styles.editTitle}>{formData.itemName || "Nome do Produto"}</Text>
+                <Text style={styles.editTitle}>
+                  {originalData.itemName || "Nome do Produto"}
+                </Text>
               </View>
               <Text style={styles.editLabel}>
-                <Text style={{ fontWeight: 'bold' }}>Quantidade:</Text> {formData.quantity || 1}
+                <Text style={{ fontWeight: "bold" }}>Quantidade:</Text>{" "}
+                {originalData.quantity || 1}
               </Text>
               <Text style={styles.editLabel}>
-                <Text style={{ fontWeight: 'bold' }}>Data do Pedido:</Text> {formData.orderDate || "22/03/2025"}
-              </Text>              
+                <Text style={{ fontWeight: "bold" }}>Data do Pedido:</Text>{" "}
+                {originalData.orderDate || "22/03/2025"}
+              </Text>
               <TextInput
                 style={styles.editInput}
                 placeholder="Quantidade"
-                value={String(formData.quantity)}
+                value={String(formData.quantity || "")}
                 onChangeText={(text) => handleChange("quantity", text)}
+                keyboardType="numeric"
               />
               <TextInput
                 style={styles.editInputLarge}
@@ -85,9 +128,21 @@ const FormModal = forwardRef((props, ref) => {
                 onChangeText={(text) => handleChange("description", text)}
               />
               <View style={styles.buttonGroup}>
-                <Button mode="contained" onPress={() => setVisible(false)} style={{backgroundColor: '#AE0F0A'}} labelStyle={{ color: '#fff' }}> Excluir </Button>
-                <Button mode="contained" onPress={() => setVisible(false)}>Cancelar</Button>
-                <Button mode="contained" onPress={handleConfirm}>Confirmar</Button>
+                <Button
+                  mode="contained"
+                  onPress={handleDelete}
+                  style={{ backgroundColor: "#AE0F0A" }}
+                  labelStyle={{ color: "#fff" }}
+                >
+                  {" "}
+                  Excluir{" "}
+                </Button>
+                <Button mode="contained" onPress={() => setVisible(false)}>
+                  Cancelar
+                </Button>
+                <Button mode="contained" onPress={handleConfirm}>
+                  Confirmar
+                </Button>
               </View>
             </KeyboardAwareScrollView>
           </View>
@@ -102,11 +157,13 @@ const FormModal = forwardRef((props, ref) => {
               showsVerticalScrollIndicator={false}
             >
               <Text style={styles.justTitle}>Negar Produto</Text>
-              <Text style={styles.justSubtitle}>Tem certeza de que quer negar este pedido?</Text>
+              <Text style={styles.justSubtitle}>
+                Tem certeza de que quer negar este pedido?
+              </Text>
               <Text style={styles.justLabel}>Justificativa:</Text>
               <TextInput
                 style={styles.justInput}
-                placeholder="Digite uma justificativa"
+                placeholder="Digite uma justificativa (opcional)"
                 multiline
                 numberOfLines={5}
                 value={justification}
@@ -117,7 +174,7 @@ const FormModal = forwardRef((props, ref) => {
                   mode="contained"
                   onPress={() => setVisible(false)}
                   style={styles.justCancelButton}
-                  labelStyle={{ color: '#fff' }}
+                  labelStyle={{ color: "#fff" }}
                 >
                   Cancelar
                 </Button>
@@ -125,7 +182,7 @@ const FormModal = forwardRef((props, ref) => {
                   mode="contained"
                   onPress={handleConfirm}
                   style={styles.justConfirmButton}
-                  labelStyle={{ color: '#fff' }}
+                  labelStyle={{ color: "#fff" }}
                 >
                   Confirmar
                 </Button>
@@ -142,139 +199,139 @@ export default FormModal;
 
 const styles = StyleSheet.create({
   title: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 22,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#CCCCCC',
+    borderColor: "#CCCCCC",
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginTop: 12,
     marginBottom: 16,
-    backgroundColor: '#FAFAFA',
-    textAlignVertical: 'top',
+    backgroundColor: "#FAFAFA",
+    textAlignVertical: "top",
   },
   buttonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     gap: 10,
     marginTop: 20,
     marginBottom: 20,
   },
   cancelButton: {
-    backgroundColor: '#B0B0B0',
+    backgroundColor: "#B0B0B0",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
   },
   confirmButton: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: "#D32F2F",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
   },
   justModalContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    backgroundColor: "#fff",
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
     height: 340,
   },
   justContent: {
     padding: 24,
-    justifyContent: 'flex-start',
-    paddingBottom: 8, 
+    justifyContent: "flex-start",
+    paddingBottom: 8,
   },
   justRedBar: {
     width: 6,
-    backgroundColor: '#F44336',
+    backgroundColor: "#F44336",
   },
   justTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 12,
-    color: '#000',
+    color: "#000",
   },
   justSubtitle: {
     fontSize: 16,
-    color: '#222',
+    color: "#222",
     marginBottom: 18,
   },
   justLabel: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
     marginBottom: 8,
-    color: '#000',
+    color: "#000",
   },
   justInput: {
     borderWidth: 1,
-    borderColor: '#888',
+    borderColor: "#888",
     borderRadius: 6,
     padding: 12,
     minHeight: 100,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginBottom: 24,
     fontSize: 16,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   justButtonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     gap: 12,
   },
   justCancelButton: {
-    backgroundColor: '#155DFC',
+    backgroundColor: "#155DFC",
     borderRadius: 24,
     marginRight: 8,
     minWidth: 120,
   },
   justConfirmButton: {
-    backgroundColor: '#AE0F0A',
+    backgroundColor: "#AE0F0A",
     borderRadius: 24,
     minWidth: 120,
   },
   editModalContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
     minHeight: 380,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   editContent: {
     padding: 24,
-    justifyContent: 'flex-start',
-    paddingBottom: 8, 
+    justifyContent: "flex-start",
+    paddingBottom: 8,
   },
   editHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   editTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
   },
   editStatus: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#222',
+    fontWeight: "bold",
+    color: "#222",
   },
   editLabel: {
     fontSize: 15,
-    color: '#222',
+    color: "#222",
     marginBottom: 2,
-  },  
+  },
   editInput: {
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     borderRadius: 8,
-    backgroundColor: '#F3EEF8',
+    backgroundColor: "#F3EEF8",
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginTop: 12,
@@ -283,37 +340,37 @@ const styles = StyleSheet.create({
   },
   editInputLarge: {
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     borderRadius: 8,
-    backgroundColor: '#F3EEF8',
+    backgroundColor: "#F3EEF8",
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginTop: 12,
     marginBottom: 8,
     fontSize: 16,
     minHeight: 100,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   editButtonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 24,
     gap: 16,
   },
   editDeleteButton: {
-    backgroundColor: '#155DFC',
+    backgroundColor: "#155DFC",
     borderRadius: 8,
     minWidth: 120,
     marginRight: 8,
   },
   editConfirmButton: {
-    backgroundColor: '#155DFC',
+    backgroundColor: "#155DFC",
     borderRadius: 8,
     minWidth: 120,
   },
   editYellowBar: {
     width: 6,
-    backgroundColor: '#FFEB3B',
+    backgroundColor: "#FFEB3B",
     right: 0,
     top: 0,
     bottom: 0,

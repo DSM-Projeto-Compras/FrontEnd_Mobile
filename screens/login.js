@@ -11,37 +11,46 @@ import { TextInput, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
 import BtnPadrao from "../components/button";
+import Toast from "../components/toast";
 import { useAuth } from "../contexts/AuthContext";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const { login, userToken, isAdmin } = useAuth();
+  const {
+    login,
+    userToken,
+    isAdmin,
+    successMessage,
+    errorMessage,
+    clearSuccessMessage,
+    clearErrorMessage,
+  } = useAuth();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [localErrorMessage, setLocalErrorMessage] = useState("");
 
   const handleLogin = async () => {
-    setError("");
+    setLocalErrorMessage("");
 
     if (!email) {
-      setError("O email é obrigatório");
+      setLocalErrorMessage("O email é obrigatório");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("O email informado não é válido");
+      setLocalErrorMessage("O email informado não é válido");
       return;
     }
 
     if (!senha) {
-      setError("A senha é obrigatória");
+      setLocalErrorMessage("A senha é obrigatória");
       return;
     }
 
     if (senha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
+      setLocalErrorMessage("A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
@@ -50,11 +59,17 @@ const LoginScreen = () => {
     try {
       await login(email, senha);
     } catch (err) {
-      setError("Credenciais inválidas. Verifique seu email e senha.");
+      setLocalErrorMessage(
+        "Credenciais inválidas. Verifique seu email e senha."
+      );
       console.error("Erro no login:", err);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDismissLocalError = () => {
+    setLocalErrorMessage("");
   };
 
   useEffect(() => {
@@ -95,8 +110,6 @@ const LoginScreen = () => {
           style={styles.input}
         />
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
         <BtnPadrao
           title={isLoading ? "Entrando..." : "Login"}
           onPress={handleLogin}
@@ -123,6 +136,16 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <Toast
+        login
+        successMessage={successMessage}
+        errorMessage={errorMessage || localErrorMessage}
+        onDismissSuccess={clearSuccessMessage}
+        onDismissError={
+          errorMessage ? clearErrorMessage : handleDismissLocalError
+        }
+      />
     </KeyboardAvoidingView>
   );
 };
@@ -156,11 +179,6 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 8,
     paddingVertical: 6,
-  },
-  errorText: {
-    color: "#AE0F0A",
-    textAlign: "center",
-    marginBottom: 10,
   },
   loader: {
     marginTop: 10,

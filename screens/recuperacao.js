@@ -10,6 +10,7 @@ import {
 import { Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
+import Toast from "../components/toast";
 import { useAuth } from "../contexts/AuthContext";
 import Step1EmailForm from "../components/steps/forgot";
 import Step2CodeVerification from "../components/steps/verify";
@@ -17,7 +18,15 @@ import Step3NewPassword from "../components/steps/reset";
 
 const RecuperacaoScreen = () => {
   const navigation = useNavigation();
-  const { forgotPassword, verifyCode, resetPassword } = useAuth();
+  const {
+    forgotPassword,
+    verifyCode,
+    resetPassword,
+    successMessage,
+    errorMessage,
+    clearSuccessMessage,
+    clearErrorMessage,
+  } = useAuth();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -25,21 +34,19 @@ const RecuperacaoScreen = () => {
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [localErrorMessage, setLocalErrorMessage] = useState("");
 
   const handleStep1 = async () => {
-    setError("");
-    setSuccessMessage("");
+    setLocalErrorMessage("");
 
     if (!email) {
-      setError("O email é obrigatório");
+      setLocalErrorMessage("O email é obrigatório");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("O email informado não é válido");
+      setLocalErrorMessage("O email informado não é válido");
       return;
     }
 
@@ -48,27 +55,27 @@ const RecuperacaoScreen = () => {
     try {
       const result = await forgotPassword(email);
       if (result.success) {
-        setSuccessMessage("Código de verificação enviado para seu email");
         setCurrentStep(2);
       }
     } catch (err) {
-      setError(err.message || "Erro ao enviar email de recuperação");
+      setLocalErrorMessage(
+        err.message || "Erro ao enviar email de recuperação"
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleStep2 = async () => {
-    setError("");
-    setSuccessMessage("");
+    setLocalErrorMessage("");
 
     if (!codigo) {
-      setError("O código de verificação é obrigatório");
+      setLocalErrorMessage("O código de verificação é obrigatório");
       return;
     }
 
     if (codigo.length !== 6) {
-      setError("O código deve ter 6 dígitos");
+      setLocalErrorMessage("O código deve ter 6 dígitos");
       return;
     }
 
@@ -77,37 +84,35 @@ const RecuperacaoScreen = () => {
     try {
       const result = await verifyCode(codigo, email);
       if (result.success) {
-        setSuccessMessage("Código verificado com sucesso");
         setCurrentStep(3);
       }
     } catch (err) {
-      setError(err.message || "Código de verificação inválido");
+      setLocalErrorMessage(err.message || "Código de verificação inválido");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleStep3 = async () => {
-    setError("");
-    setSuccessMessage("");
+    setLocalErrorMessage("");
 
     if (!novaSenha) {
-      setError("A nova senha é obrigatória");
+      setLocalErrorMessage("A nova senha é obrigatória");
       return;
     }
 
     if (novaSenha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
+      setLocalErrorMessage("A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
     if (!confirmarSenha) {
-      setError("A confirmação de senha é obrigatória");
+      setLocalErrorMessage("A confirmação de senha é obrigatória");
       return;
     }
 
     if (novaSenha !== confirmarSenha) {
-      setError("As senhas não coincidem");
+      setLocalErrorMessage("As senhas não coincidem");
       return;
     }
 
@@ -116,16 +121,19 @@ const RecuperacaoScreen = () => {
     try {
       const result = await resetPassword(novaSenha, email, codigo);
       if (result.success) {
-        setSuccessMessage("Senha redefinida com sucesso!");
         setTimeout(() => {
           navigation.navigate("Login");
         }, 2000);
       }
     } catch (err) {
-      setError(err.message || "Erro ao redefinir senha");
+      setLocalErrorMessage(err.message || "Erro ao redefinir senha");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDismissLocalError = () => {
+    setLocalErrorMessage("");
   };
 
   const renderCurrentStep = () => {
@@ -175,11 +183,6 @@ const RecuperacaoScreen = () => {
       <View style={styles.content}>
         {renderCurrentStep()}
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        {successMessage ? (
-          <Text style={styles.successText}>{successMessage}</Text>
-        ) : null}
-
         {isLoading && (
           <ActivityIndicator style={styles.loader} color="#AE0F0A" />
         )}
@@ -191,6 +194,16 @@ const RecuperacaoScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <Toast
+        login
+        successMessage={successMessage}
+        errorMessage={errorMessage || localErrorMessage}
+        onDismissSuccess={clearSuccessMessage}
+        onDismissError={
+          errorMessage ? clearErrorMessage : handleDismissLocalError
+        }
+      />
     </KeyboardAvoidingView>
   );
 };
@@ -213,16 +226,6 @@ const styles = StyleSheet.create({
   loginLink: {
     color: "red",
     fontWeight: "bold",
-  },
-  errorText: {
-    color: "#AE0F0A",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  successText: {
-    color: "#4CAF50",
-    textAlign: "center",
-    marginBottom: 10,
   },
   loader: {
     marginTop: 10,

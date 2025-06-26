@@ -10,19 +10,26 @@ import { TextInput, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/header";
 import BtnPadrao from "../components/button";
+import Toast from "../components/toast";
 import { useAuth } from "../contexts/AuthContext";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
-  const { register, userToken } = useAuth();
+  const {
+    register,
+    userToken,
+    successMessage,
+    errorMessage,
+    clearSuccessMessage,
+    clearErrorMessage,
+  } = useAuth();
 
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmSenha, setConfirmSenha] = useState("");
-
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [localErrorMessage, setLocalErrorMessage] = useState("");
 
   useEffect(() => {
     if (userToken) {
@@ -31,37 +38,36 @@ const RegisterScreen = () => {
   }, [userToken, navigation]);
 
   const handleRegister = async () => {
-    setError("");
-    let hasError = false;
+    setLocalErrorMessage("");
 
     if (!nome) {
-      setError("O nome é obrigatório");
+      setLocalErrorMessage("O nome é obrigatório");
       return;
     }
 
     if (!email) {
-      setError("O email é obrigatório");
+      setLocalErrorMessage("O email é obrigatório");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("O email informado não é válido");
+      setLocalErrorMessage("O email informado não é válido");
       return;
     }
 
     if (!senha) {
-      setError("A senha é obrigatória");
+      setLocalErrorMessage("A senha é obrigatória");
       return;
     }
 
     if (senha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
+      setLocalErrorMessage("A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
     if (senha !== confirmSenha) {
-      setError("As senhas não coincidem");
+      setLocalErrorMessage("As senhas não coincidem");
       return;
     }
 
@@ -71,19 +77,24 @@ const RegisterScreen = () => {
       const result = await register(nome, email, senha);
 
       if (result.success) {
-        alert("Cadastro realizado com sucesso! Por favor, faça login.");
-        navigation.navigate("Login");
+        setTimeout(() => {
+          navigation.navigate("Login");
+        }, 2000);
       }
     } catch (err) {
       if (err.message.includes("409")) {
-        setError("O email informado já está cadastrado");
+        setLocalErrorMessage("O email informado já está cadastrado");
       } else {
-        setError("Falha no cadastro. Tente novamente.");
+        setLocalErrorMessage("Falha no cadastro. Tente novamente.");
       }
       console.error(err);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDismissLocalError = () => {
+    setLocalErrorMessage("");
   };
 
   return (
@@ -131,8 +142,6 @@ const RegisterScreen = () => {
           style={styles.input}
         />
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
         <BtnPadrao
           title={isLoading ? "Criando..." : "Criar Conta"}
           onPress={handleRegister}
@@ -155,6 +164,16 @@ const RegisterScreen = () => {
           </Text>
         </View>
       </View>
+
+      <Toast
+        login
+        successMessage={successMessage}
+        errorMessage={errorMessage || localErrorMessage}
+        onDismissSuccess={clearSuccessMessage}
+        onDismissError={
+          errorMessage ? clearErrorMessage : handleDismissLocalError
+        }
+      />
     </KeyboardAvoidingView>
   );
 };
@@ -188,11 +207,6 @@ const styles = StyleSheet.create({
   loginLink: {
     color: "#AE0F0A",
     fontWeight: "bold",
-  },
-  errorText: {
-    color: "#AE0F0A",
-    textAlign: "center",
-    marginBottom: 10,
   },
   loader: {
     marginTop: 10,

@@ -16,6 +16,8 @@ export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const { userToken } = useAuth();
 
   const getAuthHeaders = () => {
@@ -74,23 +76,26 @@ export const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
+      setErrorMessage(null);
+
       const response = await fetch(`${API_BASEURL}/products`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(productData),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.text();
         throw new Error(`Erro ${response.status}: ${errorData}`);
       }
-      
+
       const newProduct = await response.json();
       setProducts((prev) => [...prev, newProduct]);
+      setSuccessMessage("Requisição criada com sucesso!");
       return newProduct;
     } catch (err) {
       setError(err.message);
+      setErrorMessage("Erro ao criar requisição. Tente novamente.");
       throw err;
     } finally {
       setLoading(false);
@@ -101,21 +106,43 @@ export const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_BASEURL}/products/${id}`, {
+      setErrorMessage(null);
+
+      const backendData = {
+        _id: id,
+        nome: productData.itemName || productData.nome,
+        tipo: productData.productType || productData.tipo,
+        quantidade: parseInt(productData.quantity) || productData.quantidade,
+        categoria: productData.category || productData.categoria,
+        descricao: productData.description || productData.descricao,
+        ...(productData.status && { status: productData.status }),
+        ...(productData.justificativa && {
+          justificativa: productData.justificativa,
+        }),
+      };
+
+      const response = await fetch(`${API_BASEURL}/products`, {
         method: "PUT",
         headers: getAuthHeaders(),
-        body: JSON.stringify(productData),
+        body: JSON.stringify(backendData),
       });
+
       if (!response.ok) {
-        throw new Error("Erro ao atualizar produto");
+        const errorText = await response.text();
+        throw new Error(`Erro ao atualizar requisição: ${errorText}`);
       }
+
       const updatedProduct = await response.json();
       setProducts((prev) =>
-        prev.map((product) => (product.id === id ? updatedProduct : product))
+        prev.map((product) =>
+          product._id === id || product.id === id ? updatedProduct : product
+        )
       );
+      setSuccessMessage("Rrequisição atualizada com sucesso!");
       return updatedProduct;
     } catch (err) {
       setError(err.message);
+      setErrorMessage("Erro ao atualizar requisição. Tente novamente.");
       throw err;
     } finally {
       setLoading(false);
@@ -126,21 +153,38 @@ export const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+      setErrorMessage(null);
+
       const response = await fetch(`${API_BASEURL}/products/${id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
+
       if (!response.ok) {
-        throw new Error("Erro ao deletar produto");
+        const errorText = await response.text();
+        throw new Error(`Erro ao deletar requisição: ${errorText}`);
       }
-      setProducts((prev) => prev.filter((product) => product.id !== id));
+
+      setProducts((prev) =>
+        prev.filter((product) => product._id !== id && product.id !== id)
+      );
+      setSuccessMessage("Requisição excluída com sucesso!");
       return true;
     } catch (err) {
       setError(err.message);
+      setErrorMessage("Erro ao excluir requisição. Tente novamente.");
       throw err;
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearSuccessMessage = () => {
+    setSuccessMessage(null);
+  };
+
+  const clearErrorMessage = () => {
+    setErrorMessage(null);
   };
 
   useEffect(() => {
@@ -153,12 +197,16 @@ export const ProductProvider = ({ children }) => {
     products,
     loading,
     error,
+    successMessage,
+    errorMessage,
     getProducts,
     getProductById,
     createProduct,
     updateProduct,
     deleteProduct,
     setError,
+    clearSuccessMessage,
+    clearErrorMessage,
   };
 
   return (
