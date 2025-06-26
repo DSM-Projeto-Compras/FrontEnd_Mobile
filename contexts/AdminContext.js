@@ -16,6 +16,8 @@ export const AdminProvider = ({ children }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { userToken, isAdmin } = useAuth();
 
   const getAuthHeaders = () => {
@@ -43,6 +45,7 @@ export const AdminProvider = ({ children }) => {
       return data;
     } catch (err) {
       setError(err.message);
+      setErrorMessage("Erro ao carregar produtos");
       throw err;
     } finally {
       setLoading(false);
@@ -74,13 +77,22 @@ export const AdminProvider = ({ children }) => {
 
       await getAllProducts();
 
+      const statusText = status === "Aprovado" ? "aprovada" : "negada";
+      setSuccessMessage(`Requisição ${statusText} com sucesso!`);
+
       return data;
     } catch (err) {
       setError(err.message);
+      setErrorMessage("Erro ao processar aprovação do produto");
       throw err;
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearMessages = () => {
+    setSuccessMessage("");
+    setErrorMessage("");
   };
 
   useEffect(() => {
@@ -93,9 +105,12 @@ export const AdminProvider = ({ children }) => {
     allProducts,
     loading,
     error,
+    successMessage,
+    errorMessage,
     getAllProducts,
     approveProduct,
     setError,
+    clearMessages,
   };
 
   return (

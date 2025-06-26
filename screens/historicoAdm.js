@@ -5,11 +5,20 @@ import Header from "../components/header";
 import OrderCard from "../components/card";
 import InfoModal from "../components/infoModal";
 import BottomNavAdm from "../components/bottomNavAdm";
+import Toast from "../components/toast";
 import { useAdmin } from "../contexts/AdminContext";
 
 const HistAdmScreen = () => {
   const modalRef = useRef();
-  const { allProducts, loading, error, approveProduct } = useAdmin();
+  const {
+    allProducts,
+    loading,
+    error,
+    approveProduct,
+    successMessage,
+    errorMessage,
+    clearMessages,
+  } = useAdmin();
 
   const abrirDetalhes = (itemData) => {
     modalRef.current?.showModal(itemData);
@@ -22,7 +31,6 @@ const HistAdmScreen = () => {
       console.log("Status alterado com sucesso");
     } catch (error) {
       console.error("Erro ao atualizar status do produto:", error);
-      // Opcional: mostrar um alerta ou toast para o usuário
     }
   };
 
@@ -90,6 +98,13 @@ const HistAdmScreen = () => {
       </ScrollView>
 
       <InfoModal ref={modalRef} />
+
+      <Toast
+        successMessage={successMessage}
+        errorMessage={errorMessage}
+        onDismissSuccess={clearMessages}
+        onDismissError={clearMessages}
+      />
 
       <View style={styles.bottomNavContainer}>
         <BottomNavAdm />
