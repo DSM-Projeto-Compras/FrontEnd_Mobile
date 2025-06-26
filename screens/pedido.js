@@ -211,7 +211,7 @@ const OrderScreen = () => {
 
         <View style={styles.formWrapper}>
           <Text variant="headlineMedium" style={styles.title}>
-            Faça a requisição do produto desejado
+            Faça Sua Requisição
           </Text>
 
           <View style={styles.formContainer}>
@@ -323,6 +323,7 @@ const styles = StyleSheet.create({
   title: {
     marginVertical: 20,
     textAlign: "center",
+    fontWeight: "bold",
   },
   input: {
     marginBottom: 16,

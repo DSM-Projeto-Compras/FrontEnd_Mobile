@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     textAlign: "center",
     flex: 1,
+    fontWeight: "bold",
   },
   bottomNavContainer: {
     position: "absolute",
