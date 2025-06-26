@@ -9,10 +9,18 @@ import { useProduct } from "../contexts/ProductContext";
 
 const HistScreen = () => {
   const modalRef = useRef();
-  const { products, loading, error } = useProduct();
+  const { products, loading, error, getProducts } = useProduct();
 
   const abrirDetalhes = (itemData) => {
     modalRef.current?.showModal(itemData);
+  };
+
+  const handleProductUpdated = async () => {
+    await getProducts();
+  };
+
+  const handleProductDeleted = async () => {
+    await getProducts();
   };
 
   const sortedProducts = React.useMemo(() => {
@@ -55,6 +63,7 @@ const HistScreen = () => {
           sortedProducts.map((product, index) => (
             <OrderCard
               key={product._id || product.id || `product-${index}`}
+              id={product._id || product.id}
               itemName={product.nome || product.name}
               quantity={product.quantidade || product.quantity || 1}
               orderDate={
@@ -72,6 +81,8 @@ const HistScreen = () => {
               justificativa={product.justificativa || ""}
               isAdmin={false}
               onVerDetalhes={abrirDetalhes}
+              onProductUpdated={handleProductUpdated}
+              onProductDeleted={handleProductDeleted}
             />
           ))}
       </ScrollView>

@@ -74,18 +74,18 @@ export const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(`${API_BASEURL}/products`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(productData),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.text();
         throw new Error(`Erro ${response.status}: ${errorData}`);
       }
-      
+
       const newProduct = await response.json();
       setProducts((prev) => [...prev, newProduct]);
       return newProduct;
@@ -101,17 +101,36 @@ export const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_BASEURL}/products/${id}`, {
+
+      const backendData = {
+        _id: id,
+        nome: productData.itemName || productData.nome,
+        tipo: productData.productType || productData.tipo,
+        quantidade: parseInt(productData.quantity) || productData.quantidade,
+        categoria: productData.category || productData.categoria,
+        descricao: productData.description || productData.descricao,
+        ...(productData.status && { status: productData.status }),
+        ...(productData.justificativa && {
+          justificativa: productData.justificativa,
+        }),
+      };
+
+      const response = await fetch(`${API_BASEURL}/products`, {
         method: "PUT",
         headers: getAuthHeaders(),
-        body: JSON.stringify(productData),
+        body: JSON.stringify(backendData),
       });
+
       if (!response.ok) {
-        throw new Error("Erro ao atualizar produto");
+        const errorText = await response.text();
+        throw new Error(`Erro ao atualizar produto: ${errorText}`);
       }
+
       const updatedProduct = await response.json();
       setProducts((prev) =>
-        prev.map((product) => (product.id === id ? updatedProduct : product))
+        prev.map((product) =>
+          product._id === id || product.id === id ? updatedProduct : product
+        )
       );
       return updatedProduct;
     } catch (err) {
@@ -131,9 +150,12 @@ export const ProductProvider = ({ children }) => {
         headers: getAuthHeaders(),
       });
       if (!response.ok) {
-        throw new Error("Erro ao deletar produto");
+        const errorText = await response.text();
+        throw new Error(`Erro ao deletar produto: ${errorText}`);
       }
-      setProducts((prev) => prev.filter((product) => product.id !== id));
+      setProducts((prev) =>
+        prev.filter((product) => product._id !== id && product.id !== id)
+      );
       return true;
     } catch (err) {
       setError(err.message);
